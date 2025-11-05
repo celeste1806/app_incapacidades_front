@@ -1,0 +1,67 @@
+.center-table {
+	text-align: center;
+}
+
+.center-cell {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 100%;
+}
+
+.actions-center {
+	display: flex;
+	justify-content: center;
+	width: 100%;
+}
+
+/* ===== Nuevo estilo alternativo para la tabla de Usuarios ===== */
+.admin-table.alt-theme {
+	border-collapse: separate;
+	border-spacing: 0 8px; /* filas separadas tipo tarjetas */
+	width: 100%;
+}
+
+.admin-table.alt-theme thead th {
+	background: linear-gradient(180deg, #f8fafc 0%, #eef2f7 100%);
+	color: #0f172a;
+	font-weight: 700;
+	padding: 10;
+	border-bottom: 2px solid #e5e7eb;
+}
+
+.admin-table.alt-theme tbody tr {
+	box-shadow: 0 6px 16px rgba(15, 23, 42, 0.06);
+	border-radius: 12px;
+}
+
+.admin-table.alt-theme tbody tr td {
+	background: #ffffff;
+	padding: 5px 5px;
+}
+
+.admin-table.alt-theme tbody tr:hover td {
+	background: #f9fafb;
+}
+
+.admin-table.alt-theme tbody tr td:first-child {
+	border-top-left-radius: 12px;
+	border-bottom-left-radius: 12px;
+}
+
+.admin-table.alt-theme tbody tr td:last-child {
+	border-top-right-radius: 12px;
+	border-bottom-right-radius: 12px;
+}
+
+.admin-table.alt-theme .badge {
+	min-width: 64px;
+	display: inline-flex;
+	justify-content: center;
+	align-items: center;
+	border-radius: 999px;
+	padding: 4px 10px;
+	font-weight: 700;
+}
+
+

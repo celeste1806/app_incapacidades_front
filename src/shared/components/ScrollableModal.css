@@ -1,0 +1,119 @@
+/* Overlay */
+.scrollable-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(2, 6, 23, 0.55);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+/* Contenedor principal */
+.scrollable-modal {
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.28);
+  width: 100%;
+  max-width: 900px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Header */
+.scrollable-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid #e5e7eb;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+}
+
+.scrollable-modal-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.scrollable-modal-close {
+  border: none;
+  background: #f1f5f9;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #0f172a;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.06s ease;
+}
+
+.scrollable-modal-close:hover {
+  background: #e2e8f0;
+}
+
+.scrollable-modal-close:active {
+  transform: scale(0.98);
+}
+
+/* Contenido scrollable */
+.scrollable-modal-content {
+  padding: 16px 20px;
+  overflow: auto;
+  outline: none;
+}
+
+/* Scrollbar personalizado */
+.scrollable-modal-content::-webkit-scrollbar {
+  width: 10px;
+}
+.scrollable-modal-content::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 8px;
+}
+.scrollable-modal-content::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 8px;
+  border: 2px solid #f1f5f9;
+}
+.scrollable-modal-content::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Footer */
+.scrollable-modal-footer {
+  padding: 10px 20px;
+  border-top: 1px solid #e5e7eb;
+  background: #ffffff;
+}
+
+.scroll-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #64748b;
+  font-size: 12px;
+}
+
+.scroll-hint::before {
+  content: '↓ ';
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+  .scrollable-modal {
+    margin: 12px;
+    border-radius: 14px;
+  }
+  .scrollable-modal-title {
+    font-size: 16px;
+  }
+}

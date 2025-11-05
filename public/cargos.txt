@@ -1,0 +1,74 @@
+ABOGADA	                                                                    CARGO DEL EMPLEADO 
+ANESTESIOLOGO	                                                            CARGO DEL EMPLEADO 
+APRENDIZ - UNIVERSITARIO	                                                CARGO DEL EMPLEADO 
+APRENDIZ SENA	                                                            CARGO DEL EMPLEADO 
+APRENDIZ SENA - ETAPA LECTIVA	                                            CARGO DEL EMPLEADO 
+ASISTENTE CONTABLE	                                                        CARGO DEL EMPLEADO 
+ASISTENTE DE AMBIENTE SEGURO	                                            CARGO DEL EMPLEADO 
+ASISTENTE DE GERENCIA Y TESORERIA	                                        CARGO DEL EMPLEADO 
+ASISTENTE DE GESTION DE CARTERA Y GLOSAS	                                CARGO DEL EMPLEADO 
+AUXILIAR ADMINISTRATIVA CANGURO	                                            CARGO DEL EMPLEADO 
+AUXILIAR CONTABLE 1	                                                        CARGO DEL EMPLEADO 
+AUXILIAR DE ADMISIONES Y ASIGNACION DE CITAS	                            CARGO DEL EMPLEADO 
+AUXILIAR DE ADMISIONES Y AUTORIZACIONES	                                    CARGO DEL EMPLEADO 
+AUXILIAR DE ENFERMERIA	                                                    CARGO DEL EMPLEADO 
+AUXILIAR DE FACTURACIÓN	                                                    CARGO DEL EMPLEADO 
+AUXILIAR DE FARMACIA	                                                    CARGO DEL EMPLEADO 
+AUXILIAR DE GESTIÓN DOCUMENTAL	                                            CARGO DEL EMPLEADO 
+AUXILIAR DE INFORMACIÓN EN SALUD	                                        CARGO DEL EMPLEADO 
+AUXILIAR DE LABORATORIO CLÍNICO	                                            CARGO DEL EMPLEADO 
+AUXILIAR DE PERSONAL	                                                    CARGO DEL EMPLEADO 
+AUXILIAR DE RADICACIÓN	                                                    CARGO DEL EMPLEADO 
+AUXILIAR DE REFERENCIA, CONTRAREFERENCIA Y ATENCION PRIORITARIA	            CARGO DEL EMPLEADO 
+AUXILIAR DE SISTEMAS 1	                                                    CARGO DEL EMPLEADO 
+AUXILIAR SERVICIOS AMBULATORIOS	                                            CARGO DEL EMPLEADO 
+BACTERIOLOGO	                                                            CARGO DEL EMPLEADO 
+CAMILLERO	                                                                CARGO DEL EMPLEADO 
+CIRUJANO PEDIÁTRICO	                                                        CARGO DEL EMPLEADO 
+CONTADOR JUNIOR	                                                            CARGO DEL EMPLEADO 
+COORDINADORA BIOMEDICA E INFRAESTRUCTURA Y PRODUCCION DE AIRE MEDICINAL	    CARGO DEL EMPLEADO 
+COORDINADORA DE GESTION DE CARTERA Y GLOSAS	                                CARGO DEL EMPLEADO 
+COORDINADORA DE PLANEACION Y CALIDAD	                                    CARGO DEL EMPLEADO 
+COORDINADORA DE SISTEMAS DE INFORMACIÓN Y COMUNICACIONES	                CARGO DEL EMPLEADO 
+COORDINADORA DE TALENTO HUMANO	                                            CARGO DEL EMPLEADO 
+COORDINDORA DE FACTURACIÓN	                                                CARGO DEL EMPLEADO 
+DIRECTOR TÉCNICO DEL SERVICIO FARMACEUTICO	                                CARGO DEL EMPLEADO 
+ENDOCRINÓLOGO PEDIÁTRA	                                                    CARGO DEL EMPLEADO 
+ENFERMERA PROFESIONAL ESPECIALIZADA	                                        CARGO DEL EMPLEADO 
+ENFERMERO PROFESIONAL	                                                    CARGO DEL EMPLEADO 
+ENFERMERO(A) PROFESIONAL	                                                CARGO DEL EMPLEADO 
+FISIOTERAPEUTA	                                                            CARGO DEL EMPLEADO 
+FONOAUDIOLOGA	                                                            CARGO DEL EMPLEADO 
+GENETISTA	                                                                CARGO DEL EMPLEADO 
+GERENTE GENERAL	                                                            CARGO DEL EMPLEADO 
+GINECÓLOGO (A)	                                                            CARGO DEL EMPLEADO 
+GINECOLOGO Y OBSTETRA	                                                    CARGO DEL EMPLEADO 
+INSTRUMENTADOR (A) QUIRÚRGICA	                                            CARGO DEL EMPLEADO 
+JEFE DEL DEPARTAMENTO DE ENFERMERIA	                                        CARGO DEL EMPLEADO 
+LIDER CENTRAL DE CITAS 13/06/2024	                                        CARGO DEL EMPLEADO 
+LIDER DE MATERNIDAD SEGURA Y MORTALIDAD	                                    CARGO DEL EMPLEADO 
+LIDER DE SEGURIDAD DEL  PACIENTE	                                        CARGO DEL EMPLEADO 
+LIDER DE SIVIGILA, COVED, PROA Y APOYO COMITÉ DE INFECCIONES	            CARGO DEL EMPLEADO 
+MEDICO AUDITOR CONCURRENTE DE CUENTAS MEDICAS	                            CARGO DEL EMPLEADO 
+MEDICO GENERAL	                                                            CARGO DEL EMPLEADO 
+MÉDICO PEDIATRA	                                                            CARGO DEL EMPLEADO 
+MÉDICO PEDIATRA-NEONATÓLOGO	                                                CARGO DEL EMPLEADO 
+MENSAJERO	                                                                CARGO DEL EMPLEADO 
+NUTRICIONISTA DIETISTA	                                                    CARGO DEL EMPLEADO 
+PROFESIONAL EN SEGURIDAD Y SALUD EN EL TRABAJO	                            CARGO DEL EMPLEADO 
+PSICÓLOGO (A)	                                                            CARGO DEL EMPLEADO 
+RECEPCIONISTA/CAJERA	                                                    CARGO DEL EMPLEADO 
+REGENTE DE FARMACIA	                                                        CARGO DEL EMPLEADO 
+SECRETARIA	                                                                CARGO DEL EMPLEADO 
+SUBGERENTE ADMINISTRATIVA Y FINANCIERA	                                    CARGO DEL EMPLEADO 
+SUBGERENTE ASISTENCIAL	                                                    CARGO DEL EMPLEADO 
+TÉCNICO EN INFORMACIÓN EN SALUD	                                            CARGO DEL EMPLEADO 
+TÉCNICO EN MANTENIMIENTO E INFRAESTRUCTURA	                                CARGO DEL EMPLEADO 
+TÉCNICO EN SISTEMAS	                                                        CARGO DEL EMPLEADO 
+TECNÓLOGO EN IMÁGENES DIAGNOSTICAS	                                        CARGO DEL EMPLEADO 
+TERAPEUTA OCUPACIONAL	                                                    CARGO DEL EMPLEADO 
+TERAPEUTA RESPIRATORIO	                                                    CARGO DEL EMPLEADO 
+TRABAJADOR SOCIAL- SIAU	                                                    CARGO DEL EMPLEADO 
+TRANSCRIPTORA	                                                            CARGO DEL EMPLEADO 
+TRANSCRIPTORA Y AUXILIAR ADMVA RAYOS X	                                    CARGO DEL EMPLEADO 
+TRANSCRIPTORA Y AUXILIAR ADTVA RAYOS X	                                    CARGO DEL EMPLEADO 

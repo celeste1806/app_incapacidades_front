@@ -1,0 +1,291 @@
+/* Estilos para la página de incapacidades rechazadas */
+.rechazadas-container {
+  padding: 30px 20px;
+  background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 50%, #ffffff 100%);
+  min-height: 100vh;
+  position: relative;
+}
+
+.rechazadas-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #00638f, #0284c7, #00638f);
+}
+
+.rechazadas-title {
+  text-align: center;
+  margin-bottom: 40px;
+  color: #1e293b;
+  font-size: 2.5rem;
+  font-weight: 800;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  letter-spacing: 2px;
+  position: relative;
+}
+
+.rechazadas-title::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 4px;
+  background: linear-gradient(90deg, #00638f, #0284c7);
+  border-radius: 2px;
+}
+
+.rechazadas-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 20px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  overflow: hidden;
+}
+
+.rechazadas-header {
+  padding: 20px 25px;
+  background: linear-gradient(135deg, #00638f 0%, #0284c7 100%);
+  color: white;
+  font-weight: 700;
+  font-size: 1.2rem;
+  text-align: center;
+  position: relative;
+}
+
+.rechazadas-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, rgba(255,255,255,0.3), rgba(255,255,255,0.1));
+}
+
+.rechazadas-body {
+  padding: 25px;
+}
+
+/* Estado vacío */
+.rechazadas-empty {
+  padding: 60px 20px;
+  text-align: center;
+  color: #475569;
+}
+
+.rechazadas-empty-icon {
+  font-size: 4rem;
+  margin-bottom: 20px;
+  opacity: 0.8;
+}
+
+.rechazadas-empty-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+  color: #1e293b;
+}
+
+.rechazadas-empty-subtitle {
+  font-size: 1rem;
+  color: #64748b;
+  line-height: 1.5;
+}
+
+/* Tabla de rechazadas */
+.rechazadas-table {
+  border: 2px solid #bae6fd;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 8px 20px rgba(0, 99, 143, 0.15);
+}
+
+.rechazadas-table-header {
+  display: grid;
+  grid-template-columns: 180px 1fr 140px 140px 80px 1fr;
+  background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+  border-bottom: 2px solid #bae6fd;
+  font-weight: 700;
+  color: #00638f;
+}
+
+.rechazadas-table-header > div {
+  padding: 15px 12px;
+  border-right: 1px solid #bae6fd;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.rechazadas-table-header > div:last-child {
+  border-right: none;
+}
+
+.rechazadas-table-row {
+  display: grid;
+  grid-template-columns: 180px 1fr 140px 140px 80px 1fr;
+  border-bottom: 1px solid #bae6fd;
+  align-items: center;
+  background: #ffffff;
+  transition: all 0.3s ease;
+}
+
+.rechazadas-table-row:hover {
+  background: #f0f9ff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 99, 143, 0.1);
+}
+
+.rechazadas-table-row:last-child {
+  border-bottom: none;
+}
+
+.rechazadas-table-cell {
+  padding: 12px;
+  border-right: 1px solid #bae6fd;
+  font-size: 0.9rem;
+  color: #374151;
+}
+
+.rechazadas-table-cell:last-child {
+  border-right: none;
+}
+
+/* Motivo de rechazo */
+.rechazadas-motivo {
+  color: #00638f;
+  font-weight: 600;
+  margin-bottom: 0;
+  margin-right: 12px;
+  text-align: left;
+  background: rgba(0, 99, 143, 0.1);
+  padding: 8px 12px;
+  border-radius: 8px;
+  border-left: 4px solid #00638f;
+  flex: 1;
+  font-size: 0.85rem;
+}
+
+/* Contenedor del motivo y botón */
+.rechazadas-actions-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+/* Botón de modificar */
+.rechazadas-btn-modify {
+  background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
+  transition: all 0.3s ease;
+  min-width: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.rechazadas-btn-modify:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(14, 165, 233, 0.4);
+}
+
+.rechazadas-btn-modify:active {
+  transform: translateY(0);
+}
+
+/* Estados de carga y error */
+.rechazadas-loading {
+  padding: 40px;
+  text-align: center;
+  color: #64748b;
+  font-size: 1.1rem;
+}
+
+.rechazadas-error {
+  padding: 40px;
+  text-align: center;
+  color: #00638f;
+  background: rgba(0, 99, 143, 0.1);
+  border-radius: 12px;
+  border-left: 4px solid #00638f;
+  margin: 20px 0;
+  font-weight: 600;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .rechazadas-table-header,
+  .rechazadas-table-row {
+    grid-template-columns: 150px 1fr 120px 120px 60px 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .rechazadas-container {
+    padding: 20px 15px;
+  }
+  
+  .rechazadas-content {
+    border-radius: 15px;
+  }
+  
+  .rechazadas-title {
+    font-size: 2rem;
+    margin-bottom: 30px;
+  }
+  
+  .rechazadas-table-header,
+  .rechazadas-table-row {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  
+  .rechazadas-table-header > div,
+  .rechazadas-table-cell {
+    border-right: none;
+    border-bottom: 1px solid #bae6fd;
+    text-align: left;
+  }
+  
+  .rechazadas-table-header > div:last-child,
+  .rechazadas-table-cell:last-child {
+    border-bottom: none;
+  }
+  
+  .rechazadas-table-header > div::before {
+    content: attr(data-label) ': ';
+    font-weight: 700;
+    color: #00638f;
+  }
+  
+  .rechazadas-actions-container {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .rechazadas-motivo {
+    margin-right: 0;
+    margin-bottom: 8px;
+    text-align: center;
+  }
+}

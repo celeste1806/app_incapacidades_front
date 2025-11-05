@@ -1,0 +1,391 @@
+/* Estilos para la página de historial de incapacidades */
+.historial-container {
+    padding: 30px 20px;
+    background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 50%, #ffffff 100%);
+    min-height: 100vh;
+    position: relative;
+  }
+  
+  .historial-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #00638f, #0284c7, #00638f);
+  }
+  
+  .historial-title {
+    text-align: center;
+    margin-bottom: 40px;
+    color: #1e293b;
+    font-size: 2.5rem;
+    font-weight: 800;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    letter-spacing: 2px;
+    position: relative;
+  }
+  
+  .historial-title::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 4px;
+    background: linear-gradient(90deg, #00638f, #0284c7);
+    border-radius: 2px;
+  }
+  
+  .historial-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    overflow: hidden;
+  }
+  
+  .historial-header {
+    padding: 20px 25px;
+    background: linear-gradient(135deg, #00638f 0%, #0284c7 100%);
+    color: white;
+    font-weight: 700;
+    font-size: 1.2rem;
+    text-align: center;
+    position: relative;
+  }
+  
+  .historial-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, rgba(255,255,255,0.3), rgba(255,255,255,0.1));
+  }
+  
+  .historial-body {
+    padding: 25px;
+  }
+  
+  /* Estado vacío */
+  .historial-empty {
+    padding: 40px 20px;
+    text-align: center;
+    color: #475569;
+    font-size: 1.1rem;
+  }
+  
+  /* Tabla de historial */
+  .historial-table {
+    border: 2px solid #bae6fd;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 8px 20px rgba(0, 99, 143, 0.15);
+  }
+  
+  .historial-table-header {
+    display: grid;
+    grid-template-columns: 180px 1fr 1fr 1fr 140px 140px 80px 140px;
+    background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+    border-bottom: 2px solid #bae6fd;
+    font-weight: 700;
+    color: #00638f;
+  }
+  
+  .historial-table-header > div {
+    padding: 15px 12px;
+    border-right: 1px solid #bae6fd;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  
+  .historial-table-header > div:last-child {
+    border-right: none;
+    text-align: right;
+  }
+  
+  .historial-table-row {
+    display: grid;
+    grid-template-columns: 180px 1fr 1fr 1fr 140px 140px 80px 140px;
+    border-bottom: 1px solid #bae6fd;
+    align-items: center;
+    background: #ffffff;
+    transition: all 0.3s ease;
+  }
+  
+  .historial-table-row:hover {
+    background: #f0f9ff;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 99, 143, 0.1);
+  }
+  
+  .historial-table-row:last-child {
+    border-bottom: none;
+  }
+  
+  .historial-table-cell {
+    padding: 12px;
+    border-right: 1px solid #bae6fd;
+    font-size: 0.9rem;
+    color: #374151;
+  }
+  
+  .historial-table-cell:last-child {
+    border-right: none;
+    text-align: right;
+  }
+  
+  /* Botón de ver documentos */
+  .historial-btn-docs {
+    background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
+    transition: all 0.3s ease;
+    min-width: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+  
+  .historial-btn-docs:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(14, 165, 233, 0.4);
+  }
+  
+  .historial-btn-docs:active {
+    transform: translateY(0);
+  }
+  
+  .historial-btn-docs:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+  }
+  
+  /* Estados de carga y error */
+  .historial-loading {
+    padding: 40px;
+    text-align: center;
+    color: #64748b;
+    font-size: 1.1rem;
+  }
+  
+  .historial-error {
+    padding: 40px;
+    text-align: center;
+    color: #00638f;
+    background: rgba(0, 99, 143, 0.1);
+    border-radius: 12px;
+    border-left: 4px solid #00638f;
+    margin: 20px 0;
+    font-weight: 600;
+  }
+
+  /* Indicador de carga en el header */
+  .historial-loading-indicator {
+    margin-left: 15px;
+    font-size: 0.9rem;
+    opacity: 0.8;
+    font-weight: 500;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% {
+      opacity: 0.8;
+    }
+    50% {
+      opacity: 0.4;
+    }
+  }
+
+  /* Skeleton loading */
+  .historial-skeleton {
+    opacity: 0.7;
+  }
+
+  .skeleton-placeholder {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: skeleton-loading 1.5s infinite;
+    height: 16px;
+    border-radius: 4px;
+    margin: 2px 0;
+  }
+
+  @keyframes skeleton-loading {
+    0% {
+      background-position: 200% 0;
+    }
+    100% {
+      background-position: -200% 0;
+    }
+  }
+
+  /* Animación de entrada para las filas */
+  .historial-table-row {
+    animation: fadeInUp 0.3s ease-out;
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  /* Modal de documentos */
+  .historial-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 50;
+  }
+  
+  .historial-modal-content {
+    width: min(720px, 92vw);
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+  }
+  
+  .historial-modal-header {
+    padding: 20px 25px;
+    border-bottom: 2px solid #bae6fd;
+    background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .historial-modal-title {
+    font-weight: 700;
+    color: #00638f;
+    font-size: 1.1rem;
+  }
+  
+  .historial-modal-close {
+    background: transparent;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: #00638f;
+    padding: 4px;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+  }
+  
+  .historial-modal-close:hover {
+    background: rgba(0, 99, 143, 0.1);
+  }
+  
+  .historial-modal-body {
+    padding: 25px;
+  }
+  
+  .historial-modal-section-title {
+    margin-bottom: 15px;
+    font-weight: 600;
+    color: #00638f;
+    font-size: 1rem;
+  }
+  
+  .historial-modal-empty {
+    color: #64748b;
+    font-style: italic;
+  }
+  
+  .historial-modal-list {
+    padding-left: 0;
+    list-style: none;
+    margin: 0;
+  }
+  
+  .historial-modal-list-item {
+    margin-bottom: 8px;
+  }
+  
+  .historial-modal-link {
+    color: #0ea5e9;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s;
+  }
+  
+  .historial-modal-link:hover {
+    color: #0284c7;
+    text-decoration: underline;
+  }
+  
+  /* Responsive */
+  @media (max-width: 1024px) {
+    .historial-table-header,
+    .historial-table-row {
+      grid-template-columns: 150px 1fr 1fr 1fr 120px 120px 60px 120px;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .historial-container {
+      padding: 20px 15px;
+    }
+    
+    .historial-content {
+      border-radius: 15px;
+    }
+    
+    .historial-title {
+      font-size: 2rem;
+      margin-bottom: 30px;
+    }
+    
+    .historial-table-header,
+    .historial-table-row {
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+    
+    .historial-table-header > div,
+    .historial-table-cell {
+      border-right: none;
+      border-bottom: 1px solid #bae6fd;
+      text-align: left;
+    }
+    
+    .historial-table-header > div:last-child,
+    .historial-table-cell:last-child {
+      border-bottom: none;
+      text-align: left;
+    }
+    
+    .historial-table-header > div::before {
+      content: attr(data-label) ': ';
+      font-weight: 700;
+      color: #00638f;
+    }
+  }

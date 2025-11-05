@@ -1,0 +1,272 @@
+/* === MODAL CON SCROLL PERSONALIZADO === */
+
+/* Overlay del modal */
+.scrollable-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+  box-sizing: border-box;
+  /* Evitar scroll del body detrás */
+  overscroll-behavior: contain;
+}
+
+/* Contenedor principal del modal */
+.scrollable-modal {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 90vw;
+  height: 90vh;            /* asegurar altura fija para scroll confiable */
+  max-height: 90vh;
+  overflow: hidden;
+  animation: modalSlideIn 0.3s ease-out;
+  touch-action: pan-y;
+}
+
+/* Animación de entrada */
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Header del modal */
+.scrollable-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px 32px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 16px 16px 0 0;
+  flex-shrink: 0;
+}
+
+.scrollable-modal-title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: white;
+}
+
+.scrollable-modal-close {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: white;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  transition: all 0.2s ease;
+}
+
+.scrollable-modal-close:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(1.1);
+}
+
+/* Contenido del modal con scroll */
+.scrollable-modal-content {
+  flex: 1;
+  height: 100%;           /* ocupar todo el alto disponible */
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0;
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  /* Mejorar experiencia de scroll y evitar rebotes que cierran el modal */
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+  outline: none; /* para focus programático */
+}
+
+/* Scrollbar personalizada */
+.scrollable-modal-content::-webkit-scrollbar {
+  width: 12px;
+}
+
+.scrollable-modal-content::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 6px;
+}
+
+.scrollable-modal-content::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 6px;
+  border: 2px solid #f1f5f9;
+}
+
+.scrollable-modal-content::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+}
+
+/* Footer del modal */
+.scrollable-modal-footer {
+  padding: 16px 32px;
+  background: white;
+  border-top: 1px solid #e2e8f0;
+  border-radius: 0 0 16px 16px;
+  flex-shrink: 0;
+}
+
+.scroll-indicator {
+  text-align: center;
+}
+
+.scroll-hint {
+  font-size: 12px;
+  color: #6b7280;
+  font-style: italic;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.scroll-hint::before {
+  content: "⬇️";
+  font-size: 14px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .scrollable-modal-overlay {
+    padding: 10px;
+  }
+  
+  .scrollable-modal {
+    max-width: 95vw;
+    max-height: 95vh;
+  }
+  
+  .scrollable-modal-header {
+    padding: 20px 24px;
+  }
+  
+  .scrollable-modal-title {
+    font-size: 18px;
+  }
+  
+  .scrollable-modal-footer {
+    padding: 12px 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .scrollable-modal-overlay {
+    padding: 5px;
+  }
+  
+  .scrollable-modal {
+    max-width: 98vw;
+    max-height: 98vh;
+    border-radius: 12px;
+  }
+  
+  .scrollable-modal-header {
+    padding: 16px 20px;
+    border-radius: 12px 12px 0 0;
+  }
+  
+  .scrollable-modal-title {
+    font-size: 16px;
+  }
+  
+  .scrollable-modal-footer {
+    padding: 10px 20px;
+    border-radius: 0 0 12px 12px;
+  }
+}
+
+/* Estados del modal */
+.scrollable-modal-overlay.modal-closing {
+  animation: modalFadeOut 0.2s ease-in;
+}
+
+.scrollable-modal.modal-closing {
+  animation: modalSlideOut 0.2s ease-in;
+}
+
+@keyframes modalFadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes modalSlideOut {
+  from {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.9) translateY(-20px);
+  }
+}
+
+/* Mejoras de accesibilidad */
+.scrollable-modal-close:focus {
+  outline: 2px solid #667eea;
+  outline-offset: 2px;
+}
+
+.scrollable-modal-content:focus {
+  outline: none;
+}
+
+/* Indicador de scroll dinámico */
+.scrollable-modal-content.has-scroll {
+  position: relative;
+}
+
+.scrollable-modal-content.has-scroll::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 20px;
+  background: linear-gradient(transparent, rgba(248, 250, 252, 0.8));
+  pointer-events: none;
+}
+
+/* Animación de contenido */
+.scrollable-modal-content > * {
+  animation: contentFadeIn 0.4s ease-out;
+}
+
+@keyframes contentFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

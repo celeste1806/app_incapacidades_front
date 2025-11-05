@@ -1,0 +1,58 @@
+html, body {
+  min-height: 100vh;
+}
+
+body {
+  --bg-url: none;
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* Fondo global con imagen y difuminado */
+  background: var(--bg);
+  background-image: var(--bg-url);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  background-attachment: fixed;
+  position: relative;
+  z-index: 0;
+}
+
+/* Capa de fondo desenfocada */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: var(--bg-url) center/cover no-repeat fixed;
+  filter: blur(3px) brightness(0.95);
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* variables y estilos base globales */
+:root {
+  --primary: #0d6efd;
+  --bg: #f7f7f8;
+  --text: #222;
+  --muted: #6b7280;
+  --card: #ffffff;
+  --border: #e5e7eb;
+  --danger: #dc2626;
+  --success: #16a34a;
+}
+
+main {
+  padding: 24px;
+  background: transparent; /* deja ver la imagen de fondo global */
+  min-height: calc(100vh - 200px);
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+/* Eliminado diseño decorativo para volver al estilo limpio */

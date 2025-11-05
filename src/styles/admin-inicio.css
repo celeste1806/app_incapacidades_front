@@ -1,0 +1,317 @@
+/* Estilos para la página de inicio del administrador */
+.admin-inicio-container {
+  padding: 30px 20px;
+  background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 50%, #ffffff 100%);
+  min-height: 100vh;
+  position: relative;
+}
+
+.admin-inicio-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #00638f, #0284c7, #00638f);
+}
+
+.admin-inicio-title {
+  text-align: center;
+  margin-bottom: 40px;
+  color: #1e293b;
+  font-size: 2.5rem;
+  font-weight: 800;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  letter-spacing: 2px;
+  position: relative;
+}
+
+.admin-inicio-title::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 4px;
+  background: linear-gradient(90deg, #00638f, #0284c7);
+  border-radius: 2px;
+}
+
+.admin-inicio-content {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.admin-inicio-welcome {
+  text-align: center;
+  margin-bottom: 40px;
+  font-size: 1.2rem;
+  color: #475569;
+  font-weight: 500;
+  background: rgba(255, 255, 255, 0.8);
+  padding: 20px;
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.admin-inicio-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+  margin-bottom: 40px;
+}
+
+.admin-inicio-stat-card {
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 16px;
+  padding: 32px 24px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.admin-inicio-stat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+}
+
+.admin-inicio-stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #00638f, #0284c7);
+}
+
+/* Estilos específicos para cada tipo de tarjeta */
+.admin-inicio-stat-card--total {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(240, 249, 255, 0.9) 100%);
+}
+
+.admin-inicio-stat-card--total::before {
+  background: linear-gradient(90deg, #00638f, #0284c7);
+}
+
+.admin-inicio-stat-card--pendientes {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(254, 243, 199, 0.9) 100%);
+}
+
+.admin-inicio-stat-card--pendientes::before {
+  background: linear-gradient(90deg, #f59e0b, #d97706);
+}
+
+.admin-inicio-stat-card--aprobadas {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(240, 253, 244, 0.9) 100%);
+}
+
+.admin-inicio-stat-card--aprobadas::before {
+  background: linear-gradient(90deg, #10b981, #059669);
+}
+
+.admin-inicio-stat-card--rechazadas {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(254, 242, 242, 0.9) 100%);
+}
+
+.admin-inicio-stat-card--rechazadas::before {
+  background: linear-gradient(90deg, #ef4444, #dc2626);
+}
+
+.admin-inicio-stat-card--empty {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.9) 100%);
+}
+
+.admin-inicio-stat-card--empty::before {
+  background: linear-gradient(90deg, #94a3b8, #64748b);
+}
+
+.admin-inicio-stat-icon {
+  font-size: 2.5rem;
+  margin-bottom: 16px;
+  display: block;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+.admin-inicio-stat-icon--total {
+  color: #00638f;
+}
+
+.admin-inicio-stat-icon--pendientes {
+  color: #f59e0b;
+}
+
+.admin-inicio-stat-icon--aprobadas {
+  color: #10b981;
+}
+
+.admin-inicio-stat-icon--rechazadas {
+  color: #ef4444;
+}
+
+.admin-inicio-stat-title {
+  margin: 0 0 12px 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.admin-inicio-stat-title--total {
+  color: #00638f;
+}
+
+.admin-inicio-stat-title--pendientes {
+  color: #d97706;
+}
+
+.admin-inicio-stat-title--aprobadas {
+  color: #065f46;
+}
+
+.admin-inicio-stat-title--rechazadas {
+  color: #991b1b;
+}
+
+.admin-inicio-stat-number {
+  font-size: 3rem;
+  font-weight: 900;
+  margin-bottom: 8px;
+  line-height: 1;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.admin-inicio-stat-number--total {
+  color: #00638f;
+}
+
+.admin-inicio-stat-number--pendientes {
+  color: #f59e0b;
+}
+
+.admin-inicio-stat-number--aprobadas {
+  color: #10b981;
+}
+
+.admin-inicio-stat-number--rechazadas {
+  color: #ef4444;
+}
+
+.admin-inicio-stat-description {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 500;
+  opacity: 0.8;
+}
+
+.admin-inicio-stat-description--total {
+  color: #475569;
+}
+
+.admin-inicio-stat-description--pendientes {
+  color: #d97706;
+}
+
+.admin-inicio-stat-description--aprobadas {
+  color: #065f46;
+}
+
+.admin-inicio-stat-description--rechazadas {
+  color: #991b1b;
+}
+
+/* Estados de carga y error */
+.admin-inicio-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  text-align: center;
+}
+
+.admin-inicio-loading h1 {
+  color: #1e293b;
+  margin-bottom: 16px;
+  font-size: 2rem;
+}
+
+.admin-inicio-loading p {
+  color: #64748b;
+  font-size: 1.1rem;
+}
+
+.admin-inicio-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  text-align: center;
+}
+
+.admin-inicio-error h1 {
+  color: #1e293b;
+  margin-bottom: 16px;
+  font-size: 2rem;
+}
+
+.admin-inicio-error p {
+  color: #ef4444;
+  font-size: 1.1rem;
+  background: rgba(254, 242, 242, 0.8);
+  padding: 16px 24px;
+  border-radius: 8px;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .admin-inicio-container {
+    padding: 20px 16px;
+  }
+
+  .admin-inicio-title {
+    font-size: 2rem;
+    margin-bottom: 30px;
+  }
+
+  .admin-inicio-stats-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .admin-inicio-stat-card {
+    padding: 24px 20px;
+  }
+
+  .admin-inicio-stat-number {
+    font-size: 2.5rem;
+  }
+
+  .admin-inicio-welcome {
+    font-size: 1rem;
+    padding: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-inicio-title {
+    font-size: 1.8rem;
+  }
+
+  .admin-inicio-stat-card {
+    padding: 20px 16px;
+  }
+
+  .admin-inicio-stat-number {
+    font-size: 2rem;
+  }
+}

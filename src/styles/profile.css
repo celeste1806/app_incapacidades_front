@@ -1,0 +1,128 @@
+.readonly-text {
+	color: #374151;
+	font-weight: 500;
+}
+
+.readonly-badge {
+	display: inline-block;
+	background: #e0f2fe;
+	color: #075985;
+	padding: 6px 10px;
+	border-radius: 8px;
+	font-weight: 600;
+}
+
+.readonly-button {
+	background: #e0f2fe;
+	color: #075985;
+	padding: 6px 10px;
+	border: none;
+	border-radius: 8px;
+	font-weight: 600;
+	cursor: default;
+}
+
+.clickless {
+	pointer-events: none;
+}
+
+.input-auto {
+	width: auto;
+	display: inline-block;
+}
+
+.readonly-box {
+	display: inline-block;
+	min-width: 240px;
+	padding: 8px 12px;
+	border: 1px solid #004964;
+	border-radius: 6px;
+	background: #00638f; /* azul */
+	color: #ffffff;
+}
+
+/* Card estilo tablas (difuminado) */
+.profile-card {
+	border: 1px solid #e5e7eb;
+	border-radius: 10px;
+	background: #ffffff;
+	box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+	overflow: hidden;
+	padding: 16px;
+}
+
+.profile-title {
+	margin: 0 0 12px 0;
+	padding: 12px;
+	background: linear-gradient(180deg, #f3f4f6 0%, #e5e7eb 100%);
+	color: #111827;
+	letter-spacing: .02em;
+	border-radius: 8px;
+}
+
+/* Etiquetas fuertes para campos clave */
+.field--nombre label,
+.field--numero-id label,
+.field--tipo-empleador label,
+.field--cargo label,
+.field--correo label {
+	font-weight: 700;
+}
+
+/* Icono de edición dentro del campo */
+.profile-card .control.with-icon-right {
+	position: relative;
+}
+
+.profile-card .control.with-icon-right .icon-button {
+    position: absolute;
+    right: 4px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    padding: 2px 4px;
+    cursor: pointer;
+}
+
+.profile-card .control.with-icon-right .input,
+.profile-card .control.with-icon-right .select {
+    padding-right: 38px;
+}
+
+
+/* separaciones extras entre campos */
+.field { margin-bottom: 14px; }
+
+/* Hacer todos los inputs/selecciones del perfil simétricos */
+.profile-card .input,
+.profile-card .select {
+    width: 100%;
+    display: block;
+    box-sizing: border-box;
+}
+
+.profile-card .readonly-box {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Forzar layout vertical uniforme */
+.profile-card .form-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.profile-card .field .control.with-icon-right label + .input,
+.profile-card .field .control.with-icon-right label + .select {
+    margin-top: 6px;
+}
+
+/* Botón grande negro */
+.btn-lg { padding: 14px 28px; font-size: 16px; border-radius: 10px; }
+.btn-dark { background: #111827; color: #ffffff; }
+.btn-dark:hover { background: #1f2937; }
+
+
