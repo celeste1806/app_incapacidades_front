@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { FiMail, FiLock, FiEye, FiEyeOff, FiCheckCircle, FiAlertCircle } from 'react-icons/fi';
 import '../styles/register.css'; // reutiliza estilos
-const ADMINS = ['talentohumano@umit.com.co', 'saludlaboral@umit.com.co'];
+const ADMINS = [];
 
 const initialState = { correo_electronico: '', password: '' };
 

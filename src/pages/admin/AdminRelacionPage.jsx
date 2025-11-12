@@ -51,8 +51,8 @@ export default function AdminRelacionPage() {
     (async () => {
       try {
         setLoading(true); setError('');
-        const [lista, tiposData, archivosData] = await Promise.all([ getRelaciones(), getTiposIncapacidad(), getArchivosCatalog() ]);
-        setRows(Array.isArray(lista) ? lista : []);
+        const [tiposData, archivosData] = await Promise.all([ getTiposIncapacidad(), getArchivosCatalog() ]);
+        setRows([]); // inicialmente sin datos hasta seleccionar tipo
         setTipos(Array.isArray(tiposData) ? tiposData : []);
         setArchivos(Array.isArray(archivosData) ? archivosData : []);
       } catch (e) { setError(e.message); }
@@ -64,6 +64,8 @@ export default function AdminRelacionPage() {
     setLoading(true); setError('');
     try {
       if (!value) {
+        setRows([]); // sin selección => sin datos
+      } else if (value === '__ALL__') {
         const lista = await getRelaciones();
         setRows(Array.isArray(lista) ? lista : []);
       } else {
@@ -116,7 +118,8 @@ export default function AdminRelacionPage() {
       {error && <div className="admin-error"><h1>RELACIÓN DE DOCUMENTOS</h1><p>{error}</p></div>}
       <div className="admin-filter-container">
         <select className="admin-filter-select" value={tipoFiltro} onChange={(e) => onChangeFiltro(e.target.value)} style={{ width: 320 }}>
-          <option value="">Todos los tipos</option>
+          <option value="">Seleccione el tipo</option>
+          <option value="__ALL__">Todos los tipos</option>
           {tipos.map(t => (
             <option key={t.id_tipo_incapacidad ?? t.id} value={t.id_tipo_incapacidad ?? t.id}>{t.nombre}</option>
           ))}
@@ -127,7 +130,6 @@ export default function AdminRelacionPage() {
         <table className="admin-table">
           <thead>
             <tr>
-              <th>ID</th>
               <th>Tipo de Incapacidad</th>
               <th>Documento</th>
               <th>Acciones</th>
@@ -137,24 +139,22 @@ export default function AdminRelacionPage() {
             {rows.length === 0 && <tr><td colSpan={4} className="muted" style={{ padding: 16 }}>Sin datos</td></tr>}
             {rows.map(r => {
               const key = r.id_relacion || r.id || `${r.tipo_incapacidad_id}-${r.archivo_id}`;
-              const idToShow = r.id_relacion ?? r.id ?? r.archivo_id ?? '-';
               const tipoToShow = r.tipo_incapacidad_nombre ?? r.tipo_incapacidad ?? r.tipo ?? '-';
               const docToShow = r.archivo_nombre ?? r.documento ?? r.archivo ?? '-';
               const canDelete = Boolean((r.id_relacion || r.id) || (r.tipo_incapacidad_id && r.archivo_id));
               return (
                 <tr key={key}>
-                  <td>{idToShow}</td>
                   <td>{tipoToShow}</td>
                   <td>{docToShow}</td>
                   <td>
-                <button
-                  className="admin-btn admin-btn-danger admin-btn-sm"
-                  onClick={() => onDelete(r)}
-                  disabled={!canDelete}
-                  title={!canDelete ? 'No se puede eliminar esta relación desde aquí' : ''}
-                >
-                  Eliminar
-                </button>
+                    <button
+                      className="admin-btn admin-btn-danger admin-btn-sm"
+                      onClick={() => onDelete(r)}
+                      disabled={!canDelete}
+                      title={!canDelete ? 'No se puede eliminar esta relación desde aquí' : ''}
+                    >
+                      Eliminar
+                    </button>
                   </td>
                 </tr>
               );

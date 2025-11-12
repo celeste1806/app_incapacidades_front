@@ -478,7 +478,7 @@ export async function actualizarIncapacidadAdministrativa(id_incapacidad, payloa
 }
 
 // Cambiar el estado de una incapacidad
-export async function cambiarEstadoIncapacidad(id_incapacidad, nuevoEstado, mensajeRechazo = null) {
+export async function cambiarEstadoIncapacidad(id_incapacidad, nuevoEstado, mensajeRechazo = null, motivoNoPagas = null) {
   const token = typeof localStorage !== 'undefined' ? localStorage.getItem('accessToken') : null;
   if (!token) {
     throw new Error('No hay token de autenticación');
@@ -488,11 +488,15 @@ export async function cambiarEstadoIncapacidad(id_incapacidad, nuevoEstado, mens
   if (mensajeRechazo) {
     payload.mensaje_rechazo = mensajeRechazo;
   }
+  if (motivoNoPagas) {
+    payload.motivo_no_pagas = motivoNoPagas;
+  }
   
   console.log('🔍 DEBUG cambiarEstadoIncapacidad:', {
     id_incapacidad,
     nuevoEstado,
     mensajeRechazo,
+    motivoNoPagas,
     payload
   });
   
@@ -538,7 +542,7 @@ export async function getEstadosIncapacidad() {
   // Fallback a conjunto conocido
   return [
     { id: 11, nombre: 'Pendiente' },
-    { id: 12, nombre: 'Realizada' },
+    { id: 12, nombre: 'Trámite' },
     { id: 40, nombre: 'Pagas' },
     { id: 44, nombre: 'No Pagas' },
     { id: 50, nombre: 'Rechazada' }

@@ -91,6 +91,20 @@ export async function changeUserRole(id_usuario, rol_id) {
   return data;
 }
 
+export async function updateUserAdmin(id_usuario, payload) {
+  const res = await fetch(`/api/auth/usuarios/${id_usuario}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', ...getAuthHeaders() },
+    credentials: 'include',
+    body: JSON.stringify(payload),
+  });
+  const data = await safeReadJson(res);
+  if (!res.ok) {
+    throw new Error(getErrorMessage(data) || 'No se pudo actualizar el usuario');
+  }
+  return data;
+}
+
 async function safeReadJson(res) {
   try { return await res.json(); } catch (_) { return null; }
 }

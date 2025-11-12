@@ -71,6 +71,19 @@ export function AuthProvider({ children }) {
     }
   };
 
+  const reloadUser = async () => {
+    try {
+      const data = await getCurrentUser();
+      setUser(data.user);
+      if (data.accessToken) {
+        setAccessToken(data.accessToken);
+        try { localStorage.setItem('accessToken', data.accessToken || ''); } catch (_) {}
+      }
+    } catch (error) {
+      console.error('Error recargando usuario:', error);
+    }
+  };
+
   const logout = async () => {
     try {
       await apiLogout();
@@ -117,6 +130,7 @@ export function AuthProvider({ children }) {
     logout,
     refreshAccessToken,
     getAuthHeaders,
+    reloadUser,
     isAuthenticated: !!user,
   };
 

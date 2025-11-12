@@ -107,7 +107,6 @@ async function handleCreate(values) {
 			<table className="admin-table">
 				<thead>
 					<tr>
-						<th>ID</th>
 						<th>Nombre</th>
 						<th>Descripción</th>
 						<th>Estado</th>
@@ -124,12 +123,11 @@ async function handleCreate(values) {
 					</tr>
 				</thead>
 				<tbody>
-					{rows.length === 0 && (
-						<tr><td colSpan={4} className="muted" style={{ padding: 16 }}>Sin archivos</td></tr>
+						{rows.length === 0 && (
+							<tr><td colSpan={4} className="muted" style={{ padding: 16 }}>Sin archivos</td></tr>
 					)}
                     {rows.map(a => (
                         <tr key={a.id_archivo || a.id} className={(editing && (editing.id_archivo ?? editing.id) === (a.id_archivo ?? a.id)) ? 'row-editing' : undefined}>
-							<td>{a.id_archivo ?? a.id}</td>
 							<td>{a.nombre}</td>
 							<td>{a.descripcion ?? ''}</td>
 							<td>{(a.estado === false || a.estado === 0) ? 'Inactivo' : 'Activo'}</td>

@@ -8,10 +8,15 @@ import { createIncapacidad, notifyAdminsNuevaIncapacidad, buildIncapacidadPayloa
 import { getArchivosPorTipo } from '../services/relacion';
 import { uploadIncapacidadArchivo } from '../services/upload';
 import DiagnosticoAutocomplete from '../components/DiagnosticoAutocomplete';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function IncapacidadesPage() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [tiposIncapacidad, setTiposIncapacidad] = useState([]);
+  const rolId = Number(user?.rol_id ?? user?.rol ?? 0);
+  const isAdminUser = rolId === 10;
+  const descargasPath = isAdminUser ? '/admin/descargas' : '/descargas';
   const [causasIncapacidad, setCausasIncapacidad] = useState([]);
   const [parametrosEPS, setParametrosEPS] = useState([]);
   const [parametrosDiagnostico, setParametrosDiagnostico] = useState([]);
@@ -268,7 +273,7 @@ export default function IncapacidadesPage() {
               return (
                 <div style={{ marginTop: 10, background: '#fff7e6', border: '1px solid #ffd591', color: '#ad6800', padding: 12, borderRadius: 6 }}>
                   Si usted es afiliado a EPS <b>Sanitas</b> o <b>Salud Total</b>, diríjase a
-                  {' '}<Link to="/descargas" style={{ textDecoration: 'underline' }}>Descargas</Link>{' '}para obtener el formato <b>NO AT (No Accidente de Trabajo)</b>,
+                  {' '}<Link to={descargasPath} style={{ textDecoration: 'underline' }}>Descargas</Link>{' '}para obtener el formato <b>NO AT (No Accidente de Trabajo)</b>,
                   diligenciarlo y luego subir el documento en esta página.
                 </div>
               );

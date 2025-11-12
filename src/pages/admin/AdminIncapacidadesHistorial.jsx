@@ -17,7 +17,7 @@ const formatDateTime = (s) => {
     minute: '2-digit' 
   });
 };
-const estadoText = (estado) => ({11:'Pendiente',12:'Realizada',40:'Pagas',44:'No pagas',50:'Rechazada'})[Number(estado)] || `Estado ${estado}`;
+const estadoText = (estado) => ({11:'Pendiente',12:'Trámite',40:'Pagas',44:'No pagas',50:'Rechazada'})[Number(estado)] || `Estado ${estado}`;
 
 // Función helper para obtener el nombre del tipo de incapacidad
 const getTipoIncapacidadNombre = (incapacidad) => {
@@ -188,7 +188,7 @@ export default function AdminIncapacidadesHistorial() {
             >
               <option value="">Todos</option>
               <option value="11">Pendiente</option>
-              <option value="12">Realizada</option>
+              <option value="12">Trámite</option>
               <option value="40">Pagas</option>
               <option value="44">No Pagas</option>
               <option value="50">Rechazada</option>
@@ -260,6 +260,7 @@ export default function AdminIncapacidadesHistorial() {
                 <th>Tipo</th>
                 <th>Causa de incapacidad</th>
                 <th>Estado</th>
+                <th>Motivo No Pagas</th>
                 <th>Fecha Inicio</th>
                 <th>Fecha Final</th>
                 <th>Días</th>
@@ -294,6 +295,11 @@ export default function AdminIncapacidadesHistorial() {
                     return nombre || '';
                   })()}</td>
                   <td>{estadoText(row.estado)}</td>
+                  <td>
+                    {Number(row.estado) === 44
+                      ? (row.motivo_no_pagas || 'Sin motivo registrado')
+                      : '—'}
+                  </td>
                   <td>{formatDate(row.fecha_inicio)}</td>
                   <td>{formatDate(row.fecha_final)}</td>
                   <td>{row.dias || 'N/A'}</td>

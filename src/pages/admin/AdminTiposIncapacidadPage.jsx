@@ -110,7 +110,6 @@ export default function AdminTiposIncapacidadPage() {
 				<table className="admin-table">
 					<thead>
 						<tr>
-							<th>ID</th>
 							<th>Nombre</th>
 						<th>Descripción</th>
 						<th>Estado</th>
@@ -124,11 +123,10 @@ export default function AdminTiposIncapacidadPage() {
 					</thead>
 					<tbody>
 						{rows.length === 0 && (
-							<tr><td colSpan={5} className="muted" style={{ padding: 16 }}>Sin datos</td></tr>
+							<tr><td colSpan={4} className="muted" style={{ padding: 16 }}>Sin datos</td></tr>
 						)}
                         {rows.map(r => (
                             <tr key={r.id_tipo_incapacidad || r.id} className={(editing && (editing.id_tipo_incapacidad ?? editing.id) === (r.id_tipo_incapacidad ?? r.id)) ? 'row-editing' : undefined}>
-								<td>{r.id_tipo_incapacidad ?? r.id}</td>
 								<td>{r.nombre}</td>
 							<td>{r.descripcion ?? ''}</td>
 							<td>{(r.estado === false || r.estado === 0) ? 'Inactivo' : 'Activo'}</td>

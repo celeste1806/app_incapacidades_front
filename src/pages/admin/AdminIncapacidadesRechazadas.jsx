@@ -451,7 +451,7 @@ export default function AdminIncapacidadesRechazadas() {
                 <th>Días</th>
                 <th>Motivo de Rechazo</th>
                 <th>Fecha de Registro</th>
-                <th>Acciones</th>
+                <th></th>
                     </tr>
                   </thead>
                   <tbody>
@@ -473,48 +473,7 @@ export default function AdminIncapacidadesRechazadas() {
                     {incapacidad.mensaje_rechazo || incapacidad.motivo_rechazo || 'Sin motivo especificado'}
                   </td>
                   <td>{formatDateTime(incapacidad.fecha_registro)}</td>
-                  <td>
-                    <div className="admin-actions">
-                      <button
-                        className="admin-btn admin-btn-secondary admin-btn-sm"
-                        disabled
-                        title="Las incapacidades rechazadas no pueden ser modificadas"
-                      >
-                        Ver Detalle
-                      </button>
-                      
-                      {/* Dropdown de cambio de estado */}
-                      <div className="admin-dropdown-container">
-                        <button
-                          className="admin-btn admin-btn-primary admin-btn-sm"
-                          onClick={(e) => toggleDropdown(incapacidad.id_incapacidad, e)}
-                          disabled={cambiandoEstado[incapacidad.id_incapacidad]}
-                        >
-                          {cambiandoEstado[incapacidad.id_incapacidad] ? 'Cambiando...' : 'Cambiar Estado'}
-                        </button>
-                        
-                        {dropdownAbierto[incapacidad.id_incapacidad] && (
-                          <div className="admin-dropdown">
-                            <div className="admin-dropdown-header">
-                              📋 Cambiar Estado
-                            </div>
-                            {estadosIncapacidad
-                              .filter(estado => estado.id_parametrohijo !== incapacidad.estado)
-                              .map(estado => (
-                                <button
-                                  key={estado.id_parametrohijo}
-                                  className="admin-dropdown-item"
-                                  onClick={() => handleCambiarEstado(incapacidad.id_incapacidad, estado.id_parametrohijo)}
-                                  disabled={cambiandoEstado[incapacidad.id_incapacidad]}
-                                >
-                                  {estado.nombre}
-                                </button>
-                              ))}
-                          </div>
-                        )}
-                      </div>
-                          </div>
-                        </td>
+                  <td></td>
                       </tr>
                     ))}
                   </tbody>

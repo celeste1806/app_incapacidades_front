@@ -9,7 +9,6 @@ function Table({ rows, onView, onEdit, onDelete, onAdd, editingId }) {
     <table className="admin-table">
       <thead>
         <tr>
-          <th>ID</th>
           <th>Nombre</th>
           <th>Descripción</th>
           <th>Estado</th>
@@ -35,7 +34,6 @@ function Table({ rows, onView, onEdit, onDelete, onAdd, editingId }) {
             key={rowId}
             className={editingId && editingId === rowId ? 'row-editing' : undefined}
           >
-            <td>{r.id_parametro ?? r.id ?? r.idparametro}</td>
             <td>{r.nombre}</td>
             <td>{r.descripcion ?? r.description ?? ''}</td>
             <td>{(r.estado === false || r.estado === 0) ? 'Inactivo' : 'Activo'}</td>
@@ -49,7 +47,7 @@ function Table({ rows, onView, onEdit, onDelete, onAdd, editingId }) {
         })}
         {rows.length === 0 && (
           <tr>
-            <td colSpan={4} className="muted" style={{ padding: 16 }}>Sin datos</td>
+            <td colSpan={3} className="muted" style={{ padding: 16 }}>Sin datos</td>
           </tr>
         )}
       </tbody>
@@ -113,6 +111,7 @@ export default function AdminParametrosPage() {
   const [childSaving, setChildSaving] = useState(false);
   const [childPage, setChildPage] = useState(1);
   const [childPageSize, setChildPageSize] = useState(7);
+  const [childSearch, setChildSearch] = useState('');
 
   useEffect(() => {
     let mounted = true;
@@ -145,6 +144,7 @@ export default function AdminParametrosPage() {
       console.log('Total parámetros hijo:', data ? data.length : 0);
       
       setChildren(Array.isArray(data) ? data : []);
+      setChildSearch('');
     } catch (e) {
       console.error('Error en handleView:', e);
       setChildren([]);
@@ -309,6 +309,7 @@ export default function AdminParametrosPage() {
           open={showModal}
           title={`Parámetro: ${selected.nombre}`}
           onClose={() => setShowModal(false)}
+          width="920px"
           footer={
             (() => {
               const lowerName = String(selected?.nombre || '').toLowerCase();
@@ -324,19 +325,37 @@ export default function AdminParametrosPage() {
           }
         >
           {/* El formulario de detalle ahora se muestra en un modal aparte */}
+          {(() => {
+            const lowerName = String(selected?.nombre || '').toLowerCase();
+            const showSearch = lowerName.includes('cargo') || lowerName.includes('diagnost');
+            if (!showSearch) return null;
+            return (
+              <div style={{ marginBottom: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
+                <input
+                  type="text"
+                  value={childSearch}
+                  onChange={(e) => { setChildSearch(e.target.value); setChildPage(1); }}
+                  placeholder="🔍 Buscar por nombre o descripción..."
+                  className="admin-filter-select"
+                  style={{ flex: '1 1 auto', padding: '10px 12px' }}
+                />
+                {childSearch && (
+                  <button
+                    className="admin-btn admin-btn-danger admin-btn-sm"
+                    onClick={() => { setChildSearch(''); setChildPage(1); }}
+                  >
+                    Limpiar
+                  </button>
+                )}
+              </div>
+            );
+          })()}
 
           <table className="admin-table">
             <thead>
               <tr>
-                <th>ID</th>
                 <th>Nombre</th>
-                <th>Descripción</th>
-                {(() => {
-                  const lowerName = String(selected?.nombre || '').toLowerCase();
-                  const isTipoEmpleado = lowerName.includes('tipo emple');
-                  const isRol = /\brol(es)?\b/.test(lowerName);
-                  return (isTipoEmpleado || isRol) ? null : <th>Estado</th>;
-                })()}
+                <th style={{ width: '55%' }}>Descripción</th>
                 {(() => {
                   const lowerName = String(selected?.nombre || '').toLowerCase();
                   const isTipoEmpleado = lowerName.includes('tipo emple');
@@ -352,43 +371,43 @@ export default function AdminParametrosPage() {
                     const lowerName = String(selected?.nombre || '').toLowerCase();
                     const isTipoEmpleado = lowerName.includes('tipo emple');
                     const isRol = /\brol(es)?\b/.test(lowerName);
-                    const colSpan = (isTipoEmpleado || isRol) ? 3 : 5;
-                    return <td colSpan={colSpan} className="muted" style={{ padding: 16 }}>Sin detalles</td>;
+                    const baseCols = 2 + ((isTipoEmpleado || isRol) ? 0 : 1);
+                    return <td colSpan={baseCols} className="muted" style={{ padding: 16 }}>Sin detalles</td>;
                   })()}
                 </tr>
               )}
               {(() => {
                 const lowerName = String(selected?.nombre || '').toLowerCase();
                 const isPaginated = lowerName.includes('cargo') || lowerName.includes('diagnost') || lowerName.includes('servicio');
-                const totalItems = children.length;
+                const filteredChildren = (() => {
+                  if (!childSearch.trim()) return children;
+                  const query = childSearch.trim().toLowerCase();
+                  return children.filter((c) => {
+                    const nombre = String(c.nombre || '').toLowerCase();
+                    const descripcion = String(c.descripcion ?? c.description ?? '').toLowerCase();
+                    return nombre.includes(query) || descripcion.includes(query);
+                  });
+                })();
+                const totalItems = filteredChildren.length;
                 const totalPages = Math.max(1, Math.ceil(totalItems / childPageSize));
                 const currentPage = Math.min(childPage, totalPages);
                 const start = isPaginated ? (currentPage - 1) * childPageSize : 0;
                 const end = isPaginated ? start + childPageSize : undefined;
-                const pageItems = isPaginated ? children.slice(start, end) : children;
+                const pageItems = isPaginated ? filteredChildren.slice(start, end) : filteredChildren;
                 return pageItems.map((c) => {
                 const childId = c.id_parametrohijo ?? c.id ?? c.idparametrohijo;
                 const editingChildId = childEditing ? (childEditing.id_parametrohijo ?? childEditing.id ?? childEditing.idparametrohijo) : null;
+                const lowerName = String(selected?.nombre || '').toLowerCase();
+                const isTipoEmpleado = lowerName.includes('tipo emple');
+                const isRol = /\brol(es)?\b/.test(lowerName);
                 return (
                 <tr
                   key={childId}
                   className={editingChildId && editingChildId === childId ? 'row-editing' : undefined}
                 >
-                  <td>{c.id_parametrohijo ?? c.id ?? c.idparametrohijo}</td>
                   <td>{c.nombre}</td>
                   <td>{c.descripcion ?? c.description ?? ''}</td>
                     {(() => {
-                      const lowerName = String(selected?.nombre || '').toLowerCase();
-                      const isTipoEmpleado = lowerName.includes('tipo emple');
-                      const isRol = /\brol(es)?\b/.test(lowerName);
-                      return (isTipoEmpleado || isRol) ? null : (
-                        <td>{(c.estado === false || c.estado === 0) ? 'Inactivo' : 'Activo'}</td>
-                      );
-                    })()}
-                    {(() => {
-                      const lowerName = String(selected?.nombre || '').toLowerCase();
-                      const isTipoEmpleado = lowerName.includes('tipo emple');
-                      const isRol = /\brol(es)?\b/.test(lowerName);
                       return (isTipoEmpleado || isRol) ? null : (
                         <td>
                           <button onClick={() => setChildEditing(c)} className="admin-btn admin-btn-dark admin-btn-sm" style={{ marginRight: 8 }}>Editar</button>
@@ -407,7 +426,16 @@ export default function AdminParametrosPage() {
             const lowerName = String(selected?.nombre || '').toLowerCase();
             const isPaginated = lowerName.includes('cargo') || lowerName.includes('diagnost') || lowerName.includes('servicio');
             if (!isPaginated) return null;
-            const totalItems = children.length;
+            const filteredChildren = (() => {
+              if (!childSearch.trim()) return children;
+              const query = childSearch.trim().toLowerCase();
+              return children.filter((c) => {
+                const nombre = String(c.nombre || '').toLowerCase();
+                const descripcion = String(c.descripcion ?? c.description ?? '').toLowerCase();
+                return nombre.includes(query) || descripcion.includes(query);
+              });
+            })();
+            const totalItems = filteredChildren.length;
             const totalPages = Math.max(1, Math.ceil(totalItems / childPageSize));
             const currentPage = Math.min(childPage, totalPages);
             if (totalPages <= 1) return null;
@@ -478,6 +506,7 @@ export default function AdminParametrosPage() {
           open={childShowCreate || !!childEditing}
           title={childEditing ? 'Editar detalle' : 'Agregar detalle'}
           onClose={() => { setChildShowCreate(false); setChildEditing(null); }}
+          width="640px"
         >
           <div className="admin-card">
             <div className="admin-card-header">{childEditing ? 'Editar detalle' : 'Agregar detalle'}</div>

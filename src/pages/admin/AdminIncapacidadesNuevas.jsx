@@ -7,7 +7,9 @@ import '../../styles/admin-parametros.css';
 import '../../styles/admin-pages-blue.css';
 
 export default function AdminIncapacidadesPendientes() {
+  const ITEMS_PER_PAGE = 6;
   const [incapacidades, setIncapacidades] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showFormModal, setShowFormModal] = useState(false);
@@ -20,12 +22,15 @@ export default function AdminIncapacidadesPendientes() {
   const [editFormData, setEditFormData] = useState({});
   const [savingForm, setSavingForm] = useState(false);
   const [cambiandoEstado, setCambiandoEstado] = useState({});
-  const [dropdownAbierto, setDropdownAbierto] = useState({});
+  // Nuevo: modal separado para campos administrativos
+  const [showAdminModal, setShowAdminModal] = useState(false);
+  // Eliminado: dropdownAbierto no se usa
   const [estadosIncapacidad, setEstadosIncapacidad] = useState([]);
   const [showChangeStateModal, setShowChangeStateModal] = useState(false);
   const [selectedIncapacidadForState, setSelectedIncapacidadForState] = useState(null);
   const [selectedNewState, setSelectedNewState] = useState(null);
   const [mensajeRechazo, setMensajeRechazo] = useState('');
+  const [motivoNoPagas, setMotivoNoPagas] = useState('');
   const [loadingEstados, setLoadingEstados] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
@@ -34,41 +39,11 @@ export default function AdminIncapacidadesPendientes() {
     loadIncapacidadesPendientes();
   }, []);
 
-  // Cerrar dropdowns al hacer clic fuera
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      // Si hay un modal abierto, ignorar clics dentro del modal
-      const modalEl = document.querySelector('.scrollable-modal');
-      if (modalEl && event.target && event.target.closest && event.target.closest('.scrollable-modal')) {
-        return;
-      }
-      // Mantener abierto si el clic ocurre dentro del dropdown del admin
-      if (!event.target.closest('.admin-dropdown') && !event.target.closest('.admin-dropdown-container')) {
-        setDropdownAbierto({});
-      }
-    };
+  // Eliminado: lógica de cierre de dropdowns no usada
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
+  // Eliminado: cierre de dropdown por navegación
 
-  // Cerrar dropdowns al cambiar de ruta
-  useEffect(() => {
-    setDropdownAbierto({});
-  }, [location.pathname]);
-
-  // Cerrar dropdowns al hacer scroll
-  useEffect(() => {
-    const onScroll = (e) => {
-      // Si el modal de formulario está abierto, ignorar scroll para no interferir
-      if (document.querySelector('.scrollable-modal')) return;
-      setDropdownAbierto({});
-    };
-    window.addEventListener('scroll', onScroll, true);
-    return () => window.removeEventListener('scroll', onScroll, true);
-  }, []);
+  // Eliminado: cierre de dropdown por scroll
 
   // Debug: Verificar datos de selectedIncapacidad cuando cambie
   useEffect(() => {
@@ -92,6 +67,13 @@ export default function AdminIncapacidadesPendientes() {
     }
   }, [selectedIncapacidad]);
 
+  useEffect(() => {
+    const totalPages = Math.max(1, Math.ceil(incapacidades.length / ITEMS_PER_PAGE));
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages);
+    }
+  }, [incapacidades.length, currentPage, ITEMS_PER_PAGE]);
+
   const loadIncapacidadesPendientes = async () => {
     try {
       setLoading(true);
@@ -114,6 +96,7 @@ export default function AdminIncapacidadesPendientes() {
         console.log('📋 Estados cargados:', estadosDisponibles);
         
         setIncapacidades(incapacidades);
+        setCurrentPage(1);
         setEstadosIncapacidad(estadosDisponibles);
         
         if (incapacidades.length > 0) {
@@ -124,6 +107,7 @@ export default function AdminIncapacidadesPendientes() {
         // Fallback para estructura antigua
         console.log('📊 Total de incapacidades Nuevas:', response.length);
         setIncapacidades(response);
+        setCurrentPage(1);
       }
     } catch (e) {
       console.error('Error al cargar incapacidades Nuevas:', e);
@@ -172,13 +156,19 @@ export default function AdminIncapacidadesPendientes() {
     // Buscar el estado en la lista cargada del backend
     const estadoEncontrado = estadosIncapacidad.find(e => e.id_parametrohijo === estado);
     if (estadoEncontrado) {
+      // Forzar etiqueta por ID (independiente del nombre en BD)
+      if (estado === 12) return 'Trámite';
+      if (estado === 11) return 'Pendiente';
+      if (estado === 40) return 'Pagas';
+      if (estado === 44) return 'No Pagas';
+      if (estado === 50) return 'Rechazada';
       return estadoEncontrado.nombre;
     }
     
     // Fallback a valores hardcodeados si no se han cargado los estados
     switch (estado) {
       case 11: return 'Pendiente';
-      case 12: return 'Realizada';
+      case 12: return 'Trámite';
       case 40: return 'Pagas';
       case 44: return 'No Pagas';
       case 50: return 'Rechazada';
@@ -190,8 +180,7 @@ export default function AdminIncapacidadesPendientes() {
   const handleVerFormulario = async (incapacidad) => {
     try {
       setLoadingForm(true);
-      // Cerrar dropdowns para evitar interferencia de eventos mientras el modal está abierto
-      setDropdownAbierto({});
+      // Abrir modal del formulario
       // Obtener detalles completos incluyendo documentos
       const detalles = await getIncapacidadDetalle(incapacidad.id_incapacidad);
       console.log('📥 Datos recibidos del backend:', detalles);
@@ -220,7 +209,7 @@ export default function AdminIncapacidadesPendientes() {
         numero_radicado: detalles.numero_radicado || '',
         fecha_radicado: detalles.fecha_radicado ? detalles.fecha_radicado.split('T')[0] : '',
         fecha_pago: detalles.fecha_pago ? detalles.fecha_pago.split('T')[0] : '',
-        valor_pagado: detalles.valor_pagado != null ? String(detalles.valor_pagado) : '',
+        valor_pagado: detalles.valor_pago != null ? String(detalles.valor_pago) : '',
         estado: detalles.estado != null ? detalles.estado : ''
       });
       setEditFormData({
@@ -253,14 +242,15 @@ export default function AdminIncapacidadesPendientes() {
   const handleSaveChanges = async () => {
     try {
       setSaving(true);
-      // Enviar solo campos soportados por backend para administrativo (según tabla admin)
-      const allowedKeys = ['valor_pagado', 'numero_radicado', 'fecha_radicado', 'fecha_pago', 'estado'];
+      // Enviar solo campos soportados por backend para administrativo (según columnas reales)
+      // Backend espera 'valor_pago'
+      const allowedKeys = ['valor_pago', 'numero_radicado', 'fecha_radicado', 'fecha_pago', 'estado'];
       const payloadRaw = Object.fromEntries(
         Object.entries({
           ...editData,
           fecha_radicado: editData.fecha_radicado ? new Date(editData.fecha_radicado).toISOString() : undefined,
           fecha_pago: editData.fecha_pago ? new Date(editData.fecha_pago).toISOString() : undefined,
-          valor_pagado: editData.valor_pagado !== '' && editData.valor_pagado != null ? Number(editData.valor_pagado) : undefined,
+          valor_pago: editData.valor_pagado !== '' && editData.valor_pagado != null ? Number(editData.valor_pagado) : undefined,
         }).filter(([k]) => allowedKeys.includes(k))
       );
       // Normalizar: remover llaves no usadas
@@ -282,6 +272,26 @@ export default function AdminIncapacidadesPendientes() {
       alert('Error al guardar cambios: ' + e.message);
     } finally {
       setSaving(false);
+    }
+  };
+
+  // Abrir modal de campos administrativos desde la tabla principal
+  const openAdminModal = async (incapacidad) => {
+    try {
+      // Cargar detalles para tener datos frescos
+      const detalles = await getIncapacidadDetalle(incapacidad.id_incapacidad);
+      setSelectedIncapacidad(detalles);
+      setEditData({
+        clase_administrativa: detalles.clase_administrativa || '',
+        numero_radicado: detalles.numero_radicado || '',
+        fecha_radicado: detalles.fecha_radicado ? detalles.fecha_radicado.split('T')[0] : '',
+        fecha_pago: detalles.fecha_pago ? detalles.fecha_pago.split('T')[0] : '',
+        valor_pagado: detalles.valor_pago != null ? String(detalles.valor_pago) : '',
+        estado: detalles.estado != null ? detalles.estado : ''
+      });
+      setShowAdminModal(true);
+    } catch (e) {
+      alert('Error al cargar datos administrativos: ' + e.message);
     }
   };
 
@@ -321,6 +331,7 @@ export default function AdminIncapacidadesPendientes() {
     setSelectedIncapacidadForState(incapacidad);
     setSelectedNewState(null);
     setMensajeRechazo('');
+    setMotivoNoPagas('');
     
     // Cargar estados disponibles
     try {
@@ -336,6 +347,14 @@ export default function AdminIncapacidadesPendientes() {
     }
     
     setShowChangeStateModal(true);
+  };
+
+  const handlePageChange = (page) => {
+    const totalPages = Math.max(1, Math.ceil(incapacidades.length / ITEMS_PER_PAGE));
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   };
 
   const handleConfirmStateChange = async () => {
@@ -359,15 +378,21 @@ export default function AdminIncapacidadesPendientes() {
         mensajeRechazoValue = mensajeRechazo;
       }
       
-      // Regla: si se selecciona "No Pagas" (44) y días > 2, forzar estado 12 (Trámite de EPS)
-      let estadoAEnviar = selectedNewState;
-      const diasParaRegla = Number(selectedIncapacidadForState.dias) || 0;
-      if (selectedNewState === 44 && diasParaRegla > 2) {
-        estadoAEnviar = 12; // Trámite de EPS
+      let motivoNoPagasValue = null;
+      if (selectedNewState === 44) {
+        if (!motivoNoPagas || motivoNoPagas.trim() === '') {
+          alert('Debe ingresar un motivo por el cual no están pagas');
+          setCambiandoEstado(prev => ({ ...prev, [incapacidadId]: false }));
+          return;
+        }
+        motivoNoPagasValue = motivoNoPagas;
       }
+      
+      const estadoAEnviar = selectedNewState;
+      const diasParaRegla = Number(selectedIncapacidadForState.dias) || 0;
 
       console.log('📡 Llamando a cambiarEstadoIncapacidad...', { estadoAEnviar });
-      const resp = await cambiarEstadoIncapacidad(incapacidadId, estadoAEnviar, mensajeRechazoValue);
+      const resp = await cambiarEstadoIncapacidad(incapacidadId, estadoAEnviar, mensajeRechazoValue, motivoNoPagasValue);
       console.log('✅ Respuesta recibida:', resp);
       
       // Construir mensaje desde backend (message + warning opcional)
@@ -381,11 +406,11 @@ export default function AdminIncapacidadesPendientes() {
         alert(`✅ ${baseMsg}`);
       }
       
-      // Navegación según regla original
-      if (estadoAEnviar === 12 || (selectedNewState === 44 && diasParaRegla > 2)) {
+      // Navegación según el estado seleccionado
+      if (estadoAEnviar === 12) {
           navigate('/admin/incapacidades-tramite-de-eps');
           return;
-      } else if (selectedNewState === 44) {
+      } else if (estadoAEnviar === 44) {
           navigate('/admin/incapacidades-historial');
           return;
       }
@@ -590,9 +615,12 @@ export default function AdminIncapacidadesPendientes() {
                 <div className="form-field">
                   <label className="field-label">💰 Valor pagado</label>
                   <div className="field-value">
-                    {typeof selectedIncapacidad.valor_pagado === 'number'
-                      ? `$${Number(selectedIncapacidad.valor_pagado).toLocaleString()}`
-                      : (selectedIncapacidad.paga ? '✅ Sí' : '❌ No')}
+                    {(() => {
+                      const vp = (selectedIncapacidad.valor_pago ?? selectedIncapacidad.valor_pagado ?? (typeof editData !== 'undefined' ? editData.valor_pagado : undefined));
+                      return (vp !== null && vp !== undefined && vp !== '')
+                        ? `$${Number(vp).toLocaleString()}`
+                        : (selectedIncapacidad.paga ? '✅ Sí' : '❌ No');
+                    })()}
                   </div>
                 </div>
               </div>
@@ -681,102 +709,7 @@ export default function AdminIncapacidadesPendientes() {
             </div>
           </div>
 
-          {/* Campos Administrativos Editables */}
-          <div className="card elegant-card">
-            <div className="card-header elegant-header">
-              <div className="header-content">
-                <h3 className="card-title">⚙️ Campos Administrativos</h3>
-                <button 
-                  className="btn btn-sm btn-outline"
-                  onClick={() => setIsEditing(!isEditing)}
-                >
-                  {isEditing ? '❌ Cancelar' : '✏️ Editar'}
-                </button>
-              </div>
-            </div>
-            <div className="card-body">
-              <div className="admin-grid">
-                <div className="admin-field">
-                  <label className="field-label">🔢 Número Radicado</label>
-                  {isEditing ? (
-                    <input
-                      type="text"
-                      value={editData.numero_radicado}
-                      onChange={(e) => handleEditChange('numero_radicado', e.target.value)}
-                      className="input elegant-input"
-                      placeholder="Ej: RAD-2024-001"
-                    />
-                  ) : (
-                    <div className="field-value">{selectedIncapacidad.numero_radicado || 'No definido'}</div>
-                  )}
-                </div>
-                <div className="admin-field">
-                  <label className="field-label">📅 Fecha Radicado</label>
-                  {isEditing ? (
-                    <input
-                      type="date"
-                      value={editData.fecha_radicado}
-                      onChange={(e) => handleEditChange('fecha_radicado', e.target.value)}
-                      className="input elegant-input"
-                    />
-                  ) : (
-                    <div className="field-value">{selectedIncapacidad.fecha_radicado ? formatDate(selectedIncapacidad.fecha_radicado) : 'No definido'}</div>
-                  )}
-                </div>
-                <div className="admin-field">
-                  <label className="field-label">💳 Fecha de Pago</label>
-                  {isEditing ? (
-                    <input
-                      type="date"
-                      value={editData.fecha_pago}
-                      onChange={(e) => handleEditChange('fecha_pago', e.target.value)}
-                      className="input elegant-input"
-                    />
-                  ) : (
-                    <div className="field-value">{selectedIncapacidad.fecha_pago ? formatDate(selectedIncapacidad.fecha_pago) : 'No definido'}</div>
-                  )}
-                </div>
-                <div className="admin-field">
-                  <label className="field-label">💰 Valor pagado</label>
-                  {isEditing ? (
-                    <input
-                      type="number"
-                      value={editData.valor_pagado || ''}
-                      onChange={(e) => handleEditChange('valor_pagado', e.target.value === '' ? '' : Number(e.target.value))}
-                      className="input elegant-input"
-                      min="0"
-                      step="0.01"
-                      placeholder="0"
-                    />
-                  ) : (
-                    <div className="field-value">
-                      {typeof selectedIncapacidad.valor_pagado === 'number'
-                        ? `$${Number(selectedIncapacidad.valor_pagado).toLocaleString()}`
-                        : 'N/A'}
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {isEditing && (
-                <div className="form-actions">
-                  <button 
-                    className="btn btn-primary btn-save"
-                    onClick={handleSaveChanges}
-                    disabled={saving}
-                  >
-                    {saving ? '⏳ Guardando...' : '💾 Guardar Cambios Administrativos'}
-                  </button>
-                  <button 
-                    className="btn btn-secondary"
-                    onClick={() => setIsEditing(false)}
-                  >
-                    ❌ Cancelar
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
+          {/* Se eliminó la tarjeta de Campos Administrativos dentro del formulario (solo lectura) */}
 
           {/* Botones de Acción */}
           <div className="modal-actions">
@@ -822,6 +755,13 @@ export default function AdminIncapacidadesPendientes() {
     );
   }
 
+  const totalPages = Math.max(1, Math.ceil(incapacidades.length / ITEMS_PER_PAGE));
+  const safeCurrentPage = Math.min(currentPage, totalPages);
+  const startIndex = (safeCurrentPage - 1) * ITEMS_PER_PAGE;
+  const paginatedIncapacidades = incapacidades.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+  const showingFrom = incapacidades.length === 0 ? 0 : startIndex + 1;
+  const showingTo = startIndex + paginatedIncapacidades.length;
+
   return (
     <div className="admin-pages-container">
       <h1 className="admin-pages-title">INCAPACIDADES NUEVAS</h1>
@@ -835,61 +775,106 @@ export default function AdminIncapacidadesPendientes() {
           <div className="admin-loading">
             <h1>INCAPACIDADES NUEVAS</h1>
             <p>Cargando...</p>
-        </div>
-      ) : (
-          <table className="admin-table">
-            <thead>
-              <tr>
-                <th>Usuario</th>
-                <th>Tipo</th>
-                <th>Fecha Inicio</th>
-                <th>Fecha Final</th>
-                <th>Días</th>
-                <th>Fecha de Registro</th>
-                <th>Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              {incapacidades.length === 0 && (
+          </div>
+        ) : (
+          <>
+            <table className="admin-table">
+              <thead>
                 <tr>
-                  <td colSpan={7} className="muted" style={{ padding: 16, textAlign: 'center' }}>
-                    No hay incapacidades nuevas
-                  </td>
+                  <th>Usuario</th>
+                  <th>Tipo</th>
+                  <th>Fecha Inicio</th>
+                  <th>Fecha Final</th>
+                  <th>Días</th>
+                  <th>Fecha de Registro</th>
+                  <th>Acciones</th>
                 </tr>
-              )}
-              {incapacidades.map(incapacidad => (
-                <tr key={incapacidad.id_incapacidad}>
-                  <td>{incapacidad.usuario_nombre || incapacidad.usuario || 'N/A'}</td>
-                  <td>{getTipoIncapacidadNombre(incapacidad)}</td>
-                  <td>{formatDate(incapacidad.fecha_inicio)}</td>
-                  <td>{formatDate(incapacidad.fecha_final)}</td>
-                  <td>{incapacidad.dias || 'N/A'}</td>
-                  <td>{formatDateTime(incapacidad.fecha_registro)}</td>
-                  <td>
-                    <div className="admin-actions">
-                    <button 
-                        className="admin-btn admin-btn-primary admin-btn-sm"
-                        onClick={() => handleVerFormulario(incapacidad)}
-                      >
-                        Ver Detalle
-                    </button>
-                      
-                      {/* Dropdown de cambio de estado */}
-                      <div className="admin-dropdown-container">
-                      <button 
-                          className="admin-btn admin-btn-secondary admin-btn-sm"
-                          onClick={() => handleOpenChangeStateModal(incapacidad)}
-                          disabled={cambiandoEstado[incapacidad.id_incapacidad]}
+              </thead>
+              <tbody>
+                {incapacidades.length === 0 && (
+                  <tr>
+                    <td colSpan={7} className="muted" style={{ padding: 16, textAlign: 'center' }}>
+                      No hay incapacidades nuevas
+                    </td>
+                  </tr>
+                )}
+                {paginatedIncapacidades.map(incapacidad => (
+                  <tr key={incapacidad.id_incapacidad}>
+                    <td>{incapacidad.usuario_nombre || incapacidad.usuario || 'N/A'}</td>
+                    <td>{getTipoIncapacidadNombre(incapacidad)}</td>
+                    <td>{formatDate(incapacidad.fecha_inicio)}</td>
+                    <td>{formatDate(incapacidad.fecha_final)}</td>
+                    <td>{incapacidad.dias || 'N/A'}</td>
+                    <td>{formatDateTime(incapacidad.fecha_registro)}</td>
+                    <td>
+                      <div className="admin-actions">
+                        <button 
+                          className="admin-btn admin-btn-primary admin-btn-sm"
+                          onClick={() => handleVerFormulario(incapacidad)}
                         >
-                          {cambiandoEstado[incapacidad.id_incapacidad] ? 'Cambiando...' : 'Cambiar Estado'}
-                      </button>
+                          Ver Detalle
+                        </button>
+                        <button 
+                          className="admin-btn admin-btn-outline admin-btn-sm"
+                          onClick={() => openAdminModal(incapacidad)}
+                          style={{ marginLeft: 8 }}
+                        >
+                          Campo Admin
+                        </button>
+                        
+                        {/* Dropdown de cambio de estado */}
+                        <div className="admin-dropdown-container">
+                          <button 
+                            className="admin-btn admin-btn-secondary admin-btn-sm"
+                            onClick={() => handleOpenChangeStateModal(incapacidad)}
+                            disabled={cambiandoEstado[incapacidad.id_incapacidad]}
+                          >
+                            {cambiandoEstado[incapacidad.id_incapacidad] ? 'Cambiando...' : 'Cambiar Estado'}
+                          </button>
+                        </div>
                       </div>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            {incapacidades.length > 0 && (
+              <div
+                className="pagination-controls"
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  marginTop: 16,
+                  gap: 12,
+                  flexWrap: 'wrap'
+                }}
+              >
+                <span style={{ fontSize: 14, color: '#4b5563' }}>
+                  Mostrando {showingFrom}-{showingTo} de {incapacidades.length} incapacidades
+                </span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <button
+                    className="admin-btn admin-btn-outline admin-btn-sm"
+                    onClick={() => handlePageChange(safeCurrentPage - 1)}
+                    disabled={safeCurrentPage === 1}
+                  >
+                    ◀️ Anterior
+                  </button>
+                  <span style={{ fontSize: 14, color: '#374151' }}>
+                    Página {safeCurrentPage} de {totalPages}
+                  </span>
+                  <button
+                    className="admin-btn admin-btn-outline admin-btn-sm"
+                    onClick={() => handlePageChange(safeCurrentPage + 1)}
+                    disabled={safeCurrentPage === totalPages || incapacidades.length === 0}
+                  >
+                    Siguiente ▶️
+                  </button>
+                </div>
+              </div>
+            )}
+          </>
         )}
       </div>
 
@@ -905,6 +890,7 @@ export default function AdminIncapacidadesPendientes() {
             setSelectedIncapacidadForState(null);
             setSelectedNewState(null);
             setMensajeRechazo('');
+            setMotivoNoPagas('');
           }}
           maxWidth="500px"
         >
@@ -948,6 +934,19 @@ export default function AdminIncapacidadesPendientes() {
                       />
                     </div>
                   )}
+                  {selectedNewState === 44 && (
+                    <div className="form-field full-width">
+                      <label className="field-label">📝 Motivo por el cual no están pagas *</label>
+                      <textarea
+                        value={motivoNoPagas}
+                        onChange={(e) => setMotivoNoPagas(e.target.value)}
+                        className="input elegant-input"
+                        placeholder="Ingrese el motivo por el cual no están pagas"
+                        rows="4"
+                        required
+                      />
+                    </div>
+                  )}
                 </div>
                 
                 <div className="state-modal-actions">
@@ -958,6 +957,7 @@ export default function AdminIncapacidadesPendientes() {
                       setSelectedIncapacidadForState(null);
                       setSelectedNewState(null);
                       setMensajeRechazo('');
+                      setMotivoNoPagas('');
                     }}
                   >
                     Cancelar
@@ -965,12 +965,93 @@ export default function AdminIncapacidadesPendientes() {
                   <button 
                     className="btn-confirm-state"
                     onClick={handleConfirmStateChange}
-                    disabled={!selectedNewState || (selectedNewState === 50 && !mensajeRechazo.trim())}
+                    disabled={!selectedNewState || (selectedNewState === 50 && !mensajeRechazo.trim()) || (selectedNewState === 44 && !motivoNoPagas.trim())}
                   >
                     Confirmar Cambio
                   </button>
                 </div>
         </div>
+            </div>
+          </div>
+        </ScrollableModal>
+      )}
+
+      {/* Modal separado: Campos Administrativos */}
+      {showAdminModal && selectedIncapacidad && (
+        <ScrollableModal
+          open={showAdminModal}
+          title="⚙️ Campos Administrativos"
+          onClose={() => setShowAdminModal(false)}
+          maxWidth="700px"
+        >
+          <div className="modal-content-wrapper">
+            <div className="card elegant-card">
+              <div className="card-body">
+                <div className="admin-grid">
+                  <div className="admin-field">
+                    <label className="field-label">🔢 Número Radicado</label>
+                    <input
+                      type="text"
+                      value={editData.numero_radicado || ''}
+                      onChange={(e) => handleEditChange('numero_radicado', e.target.value)}
+                      className="input elegant-input"
+                      placeholder="Ej: RAD-2024-001"
+                    />
+                  </div>
+
+                  <div className="admin-field">
+                    <label className="field-label">📅 Fecha Radicado</label>
+                    <input
+                      type="date"
+                      value={editData.fecha_radicado || ''}
+                      onChange={(e) => handleEditChange('fecha_radicado', e.target.value)}
+                      className="input elegant-input"
+                    />
+                  </div>
+
+                  <div className="admin-field">
+                    <label className="field-label">📅 Fecha de Pago</label>
+                    <input
+                      type="date"
+                      value={editData.fecha_pago || ''}
+                      onChange={(e) => handleEditChange('fecha_pago', e.target.value)}
+                      className="input elegant-input"
+                    />
+                  </div>
+
+                  <div className="admin-field">
+                    <label className="field-label">💰 Valor pagado</label>
+                    <input
+                      type="number"
+                      value={editData.valor_pagado || ''}
+                      onChange={(e) => handleEditChange('valor_pagado', e.target.value === '' ? '' : Number(e.target.value))}
+                      className="input elegant-input"
+                      min="0"
+                      step="0.01"
+                      placeholder="0"
+                    />
+                  </div>
+                </div>
+
+                <div className="form-actions" style={{ marginTop: 16 }}>
+                  <button 
+                    className="btn btn-primary btn-save"
+                    onClick={async () => {
+                      await handleSaveChanges();
+                      setShowAdminModal(false);
+                    }}
+                    disabled={saving}
+                  >
+                    {saving ? '⏳ Guardando...' : '💾 Guardar'}
+                  </button>
+                  <button 
+                    className="btn btn-secondary"
+                    onClick={() => setShowAdminModal(false)}
+                  >
+                    ❌ Cancelar
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </ScrollableModal>

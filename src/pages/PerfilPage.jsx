@@ -16,7 +16,7 @@ const emptyForm = {
 };
 
 export default function PerfilPage({ lockCargo = false, lockCorreo = false, lockTipoEmpleador = true, renderReadOnlyAsText = false, forceEditNombre = true }) {
-  const { isAuthenticated, getAuthHeaders } = useAuth();
+  const { isAuthenticated, getAuthHeaders, reloadUser } = useAuth();
   const [formValues, setFormValues] = useState(emptyForm);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -33,12 +33,13 @@ export default function PerfilPage({ lockCargo = false, lockCorreo = false, lock
     // Tipo de empleador queda bloqueado por defecto (no se añade a editables)
     return initial;
   });
-  const canSubmit = useMemo(() => (
-    formValues.nombre.trim() !== '' &&
-    String(formValues.tipo_empleador_id).trim() !== '' &&
-    String(formValues.cargo_interno).trim() !== '' &&
-    formValues.correo_electronico.trim() !== ''
-  ), [formValues]);
+  const canSubmit = useMemo(() => {
+    const hasNombre = formValues.nombre.trim() !== '';
+    const hasCorreo = formValues.correo_electronico.trim() !== '';
+    const hasTipoEmpleador = lockTipoEmpleador ? true : String(formValues.tipo_empleador_id).trim() !== '';
+    const hasCargo = lockCargo ? true : String(formValues.cargo_interno).trim() !== '';
+    return hasNombre && hasCorreo && hasTipoEmpleador && hasCargo;
+  }, [formValues, lockCargo, lockTipoEmpleador]);
 
   useEffect(() => {
     let mounted = true;
@@ -129,12 +130,15 @@ export default function PerfilPage({ lockCargo = false, lockCorreo = false, lock
       const payload = {
         nombre: String(formValues.nombre || '').trim(),
         numero_identificacion: formValues.numero_identificacion,
-        tipo_empleador_id: Number(formValues.tipo_empleador_id),
-        cargo_interno: Number(formValues.cargo_interno),
+        // Solo enviar IDs cuando no están bloqueados y hay valor
+        ...(lockTipoEmpleador ? {} : { tipo_empleador_id: Number(formValues.tipo_empleador_id) || undefined }),
+        ...(lockCargo ? {} : { cargo_interno: Number(formValues.cargo_interno) || undefined }),
         correo_electronico: String(formValues.correo_electronico || '').trim(),
         telefono: String(formValues.telefono || '').trim() || undefined,
       };
       await updateMyProfile(payload, headers);
+      // Refrescar datos en contexto para reflejar el nuevo nombre en toda la app
+      try { await reloadUser(); } catch (_) {}
       setMsg({ type: 'success', text: 'Perfil actualizado' });
     } catch (e) {
       setMsg({ type: 'error', text: e.message });

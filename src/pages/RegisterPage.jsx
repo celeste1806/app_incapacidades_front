@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { FiUser, FiCreditCard, FiMail, FiBriefcase, FiEye, FiEyeOff, FiPhone } from 'react-icons/fi';
 import { postRegister } from '../services/auth';
 import { getParametrosHijosByPapa } from '../services/parametros';
@@ -23,6 +23,7 @@ const initialState = {
 };
 
 export default function RegisterPage() {
+  const navigate = useNavigate();
   const [formValues, setFormValues] = useState(initialState);
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
@@ -123,8 +124,8 @@ export default function RegisterPage() {
       // Para contraseñas, respetar exactamente lo que escribe el usuario
       setFormValues((prev) => ({ ...prev, [name]: value }));
     } else {
-      // Para todos los demás campos de texto, convertir a mayúsculas
-      setFormValues((prev) => ({ ...prev, [name]: value.toUpperCase() }));
+      // Mantener exactamente lo que escribe el usuario (sin forzar mayúsculas)
+      setFormValues((prev) => ({ ...prev, [name]: value }));
     }
   }
 
@@ -194,6 +195,7 @@ export default function RegisterPage() {
       const data = await postRegister(payload);
       setServerMessage({ type: 'success', text: 'Registro exitoso' });
       setFormValues(initialState);
+      navigate('/login', { replace: true, state: { registered: true } });
     } catch (error) {
       setServerMessage({ type: 'error', text: error.message });
     } finally {

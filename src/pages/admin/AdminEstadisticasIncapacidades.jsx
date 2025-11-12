@@ -9,12 +9,9 @@ export default function AdminEstadisticasIncapacidades() {
   const [incapacidades, setIncapacidades] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [mesSeleccionado, setMesSeleccionado] = useState(new Date().getMonth() + 1);
-  const [añoSeleccionado, setAñoSeleccionado] = useState(new Date().getFullYear());
   // Filtros avanzados
   const [dateFrom, setDateFrom] = useState('');
   const [dateTo, setDateTo] = useState('');
-  const [usarAño, setUsarAño] = useState(true);
   const [servicioSeleccionado, setServicioSeleccionado] = useState('');
   const [serviciosCatalogo, setServiciosCatalogo] = useState([]);
   const [epsCatalogo, setEpsCatalogo] = useState([]);
@@ -28,6 +25,17 @@ export default function AdminEstadisticasIncapacidades() {
     if (/^data:image\//i.test(text)) text = '';
     return text;
   };
+
+  const parseLocalInputDate = (value) => {
+    if (!value) return null;
+    const parts = value.split('-').map(Number);
+    if (parts.length !== 3 || parts.some(Number.isNaN)) return null;
+    const [year, month, day] = parts;
+    return new Date(year, month - 1, day);
+  };
+
+  const dateFromParsed = parseLocalInputDate(dateFrom);
+  const dateToParsed = parseLocalInputDate(dateTo);
 
   // Función para obtener headers de autenticación
   const getAuthHeaders = () => {
@@ -76,18 +84,12 @@ export default function AdminEstadisticasIncapacidades() {
     const incapacidadesFiltradas = incapacidades.filter(inc => {
       const fi = inc.fecha_inicio ? new Date(inc.fecha_inicio) : null;
       if (!fi) return false;
-      // Filtro por mes/año (opcional el año)
-      const coincideMes = (fi.getMonth() + 1) === mesSeleccionado;
-      const coincideAño = usarAño ? (fi.getFullYear() === añoSeleccionado) : true;
-      if (!(coincideMes && coincideAño)) return false;
       // Filtro por rango
-      if (dateFrom) {
-        const dFrom = new Date(dateFrom);
-        if (fi < dFrom) return false;
-      }
-      if (dateTo) {
-        const dTo = new Date(dateTo);
-        // incluir el día completo
+      const dFrom = parseLocalInputDate(dateFrom);
+      if (dFrom && fi < dFrom) return false;
+
+      const dTo = parseLocalInputDate(dateTo);
+      if (dTo) {
         dTo.setHours(23,59,59,999);
         if (fi > dTo) return false;
       }
@@ -168,6 +170,17 @@ export default function AdminEstadisticasIncapacidades() {
     return meses[mes - 1];
   };
 
+  const getEstadoNombre = (estadoId) => {
+    const estadoMap = {
+      11: 'Pendiente',
+      12: 'Trámite',
+      40: 'Pagas',
+      44: 'No Pagas',
+      50: 'Rechazada'
+    };
+    return estadoMap[estadoId] || `Estado ${estadoId}` || 'N/A';
+  };
+
   const generarAños = () => {
     const años = [];
     const añoActual = new Date().getFullYear();
@@ -189,15 +202,10 @@ export default function AdminEstadisticasIncapacidades() {
       ? incapacidades.filter(inc => {
           const fi = inc.fecha_inicio ? new Date(inc.fecha_inicio) : null;
           if (!fi) return false;
-          const coincideMes = (fi.getMonth() + 1) === mesSeleccionado;
-          const coincideAño = usarAño ? (fi.getFullYear() === añoSeleccionado) : true;
-          if (!(coincideMes && coincideAño)) return false;
-          if (dateFrom) {
-            const dFrom = new Date(dateFrom);
-            if (fi < dFrom) return false;
-          }
-          if (dateTo) {
-            const dTo = new Date(dateTo);
+          const dFrom = parseLocalInputDate(dateFrom);
+          if (dFrom && fi < dFrom) return false;
+          const dTo = parseLocalInputDate(dateTo);
+          if (dTo) {
             dTo.setHours(23,59,59,999);
             if (fi > dTo) return false;
           }
@@ -292,9 +300,19 @@ export default function AdminEstadisticasIncapacidades() {
         if (uid != null) personasPorTipo.otros.add(String(uid));
       }
     });
+    const parsedFrom = parseLocalInputDate(dateFrom);
+    const parsedTo = parseLocalInputDate(dateTo);
+    const periodoTexto = parsedFrom && parsedTo 
+      ? `${parsedFrom.toLocaleDateString('es-ES')} - ${parsedTo.toLocaleDateString('es-ES')}`
+      : parsedFrom 
+        ? `Desde ${parsedFrom.toLocaleDateString('es-ES')}`
+        : parsedTo
+          ? `Hasta ${parsedTo.toLocaleDateString('es-ES')}`
+          : 'Todas las incapacidades';
+    
     const sheetResumenTipos = [
       ['ESTADÍSTICAS DE INCAPACIDADES'],
-      [`Período: ${getNombreMes(mesSeleccionado)} ${añoSeleccionado}`],
+      [`Período: ${periodoTexto}`],
       [''],
       ['TIPO DE INCAPACIDAD', 'CANTIDAD', 'PORCENTAJE', 'DÍAS', 'PERSONAS'],
       ['Accidente de Tránsito', estadisticas.accidenteTransito, `${estadisticas.total > 0 ? ((estadisticas.accidenteTransito / estadisticas.total) * 100).toFixed(1) : 0}%`, diasPorTipo.accidenteTransito, personasPorTipo.accidenteTransito.size],
@@ -325,7 +343,7 @@ export default function AdminEstadisticasIncapacidades() {
           inc.fecha_inicio ? new Date(inc.fecha_inicio).toLocaleDateString() : 'N/A',
           inc.fecha_final ? new Date(inc.fecha_final).toLocaleDateString() : 'N/A',
           inc.dias || 0,
-          inc.estado || 'N/A'
+          getEstadoNombre(inc.estado)
         ];
       })
     ];
@@ -385,7 +403,8 @@ export default function AdminEstadisticasIncapacidades() {
     const link = document.createElement('a');
     const url = URL.createObjectURL(blob);
     link.setAttribute('href', url);
-    link.setAttribute('download', `estadisticas_incapacidades_${getNombreMes(mesSeleccionado)}_${añoSeleccionado}.xls`);
+    const fechaDescarga = new Date().toISOString().split('T')[0];
+    link.setAttribute('download', `estadisticas_incapacidades_${fechaDescarga}.xls`);
     link.style.visibility = 'hidden';
     document.body.appendChild(link);
     link.click();
@@ -394,9 +413,16 @@ export default function AdminEstadisticasIncapacidades() {
 
   const descargarEstadisticasExcel = async () => {
     const incapacidadesDelMes = incapacidades.filter(inc => {
-      const fechaInicio = new Date(inc.fecha_inicio);
-      return fechaInicio.getMonth() + 1 === mesSeleccionado && 
-             fechaInicio.getFullYear() === añoSeleccionado;
+      const fi = inc.fecha_inicio ? new Date(inc.fecha_inicio) : null;
+      if (!fi) return false;
+      const dFrom = parseLocalInputDate(dateFrom);
+      if (dFrom && fi < dFrom) return false;
+      const dTo = parseLocalInputDate(dateTo);
+      if (dTo) {
+        dTo.setHours(23,59,59,999);
+        if (fi > dTo) return false;
+      }
+      return true;
     });
 
     // Obtener información completa de usuarios únicos
@@ -419,9 +445,19 @@ export default function AdminEstadisticasIncapacidades() {
     }
 
     // Crear datos para Excel con formato mejorado
+    const parsedFrom = parseLocalInputDate(dateFrom);
+    const parsedTo = parseLocalInputDate(dateTo);
+    const periodoTexto = parsedFrom && parsedTo 
+      ? `${parsedFrom.toLocaleDateString('es-ES')} - ${parsedTo.toLocaleDateString('es-ES')}`
+      : parsedFrom 
+        ? `Desde ${parsedFrom.toLocaleDateString('es-ES')}`
+        : parsedTo
+          ? `Hasta ${parsedTo.toLocaleDateString('es-ES')}`
+          : 'Todas las incapacidades';
+    
     const datosExcel = [
       ['ESTADÍSTICAS DE INCAPACIDADES'],
-      [`Período: ${getNombreMes(mesSeleccionado)} ${añoSeleccionado}`],
+      [`Período: ${periodoTexto}`],
       [''],
       ['TIPO DE INCAPACIDAD', 'CANTIDAD', 'PORCENTAJE'],
       ['Accidente de Tránsito', estadisticas.accidenteTransito, `${estadisticas.total > 0 ? ((estadisticas.accidenteTransito / estadisticas.total) * 100).toFixed(1) : 0}%`],
@@ -450,7 +486,7 @@ export default function AdminEstadisticasIncapacidades() {
           inc.fecha_inicio ? new Date(inc.fecha_inicio).toLocaleDateString() : 'N/A',
           inc.fecha_final ? new Date(inc.fecha_final).toLocaleDateString() : 'N/A',
           inc.dias || 0,
-          inc.estado || 'N/A'
+          getEstadoNombre(inc.estado)
         ];
       }),
       [''],
@@ -521,7 +557,8 @@ export default function AdminEstadisticasIncapacidades() {
     const link = document.createElement('a');
     const url = URL.createObjectURL(blob);
     link.setAttribute('href', url);
-    link.setAttribute('download', `estadisticas_incapacidades_${getNombreMes(mesSeleccionado)}_${añoSeleccionado}.xls`);
+    const fechaDescarga = new Date().toISOString().split('T')[0];
+    link.setAttribute('download', `estadisticas_incapacidades_${fechaDescarga}.xls`);
     link.style.visibility = 'hidden';
     document.body.appendChild(link);
     link.click();
@@ -530,15 +567,32 @@ export default function AdminEstadisticasIncapacidades() {
 
   const descargarEstadisticas = () => {
     const incapacidadesDelMes = incapacidades.filter(inc => {
-      const fechaInicio = new Date(inc.fecha_inicio);
-      return fechaInicio.getMonth() + 1 === mesSeleccionado && 
-             fechaInicio.getFullYear() === añoSeleccionado;
+      const fi = inc.fecha_inicio ? new Date(inc.fecha_inicio) : null;
+      if (!fi) return false;
+      const dFrom = parseLocalInputDate(dateFrom);
+      if (dFrom && fi < dFrom) return false;
+      const dTo = parseLocalInputDate(dateTo);
+      if (dTo) {
+        dTo.setHours(23,59,59,999);
+        if (fi > dTo) return false;
+      }
+      return true;
     });
 
     // Crear datos para Excel
+    const parsedFromCsv = parseLocalInputDate(dateFrom);
+    const parsedToCsv = parseLocalInputDate(dateTo);
+    const periodoTexto = parsedFromCsv && parsedToCsv 
+      ? `${parsedFromCsv.toLocaleDateString('es-ES')} - ${parsedToCsv.toLocaleDateString('es-ES')}`
+      : parsedFromCsv 
+        ? `Desde ${parsedFromCsv.toLocaleDateString('es-ES')}`
+        : parsedToCsv
+          ? `Hasta ${parsedToCsv.toLocaleDateString('es-ES')}`
+          : 'Todas las incapacidades';
+    
     const datosExcel = [
       ['ESTADÍSTICAS DE INCAPACIDADES', '', '', ''],
-      [`Período: ${getNombreMes(mesSeleccionado)} ${añoSeleccionado}`, '', '', ''],
+      [`Período: ${periodoTexto}`, '', '', ''],
       ['', '', '', ''],
       ['TIPO DE INCAPACIDAD', 'CANTIDAD', 'PORCENTAJE', ''],
       ['Accidente de Tránsito', estadisticas.accidenteTransito, `${estadisticas.total > 0 ? ((estadisticas.accidenteTransito / estadisticas.total) * 100).toFixed(1) : 0}%`, ''],
@@ -565,7 +619,7 @@ export default function AdminEstadisticasIncapacidades() {
         inc.fecha_inicio ? new Date(inc.fecha_inicio).toLocaleDateString() : 'N/A',
         inc.fecha_final ? new Date(inc.fecha_final).toLocaleDateString() : 'N/A',
         inc.dias || 0,
-        inc.estado || 'N/A'
+        getEstadoNombre(inc.estado)
       ]),
       ['', '', '', '', '', '', '', '', '', '', '', ''],
       ['RESUMEN DE USUARIOS CON INCAPACIDADES', '', '', '', '', '', '', '', '', '', '', ''],
@@ -610,7 +664,8 @@ export default function AdminEstadisticasIncapacidades() {
     const link = document.createElement('a');
     const url = URL.createObjectURL(blob);
     link.setAttribute('href', url);
-    link.setAttribute('download', `estadisticas_incapacidades_${getNombreMes(mesSeleccionado)}_${añoSeleccionado}.csv`);
+    const fechaDescarga = new Date().toISOString().split('T')[0];
+    link.setAttribute('download', `estadisticas_incapacidades_${fechaDescarga}.csv`);
     link.style.visibility = 'hidden';
     document.body.appendChild(link);
     link.click();
@@ -656,35 +711,6 @@ export default function AdminEstadisticasIncapacidades() {
         {error && <div className="admin-error"><h1>ESTADÍSTICAS DE INCAPACIDADES</h1><p>{error}</p></div>}
         
         <div className="admin-filter-container" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(200px, 1fr))', columnGap: 24, rowGap: 16, alignItems: 'end' }}>
-          <div className="filter-group">
-            <label htmlFor="mes">Mes:</label>
-            <select 
-              id="mes" 
-              value={mesSeleccionado} 
-              onChange={(e) => setMesSeleccionado(parseInt(e.target.value))}
-              className="admin-filter-select"
-              style={{ width: '100%' }}
-            >
-              {[1,2,3,4,5,6,7,8,9,10,11,12].map(mes => (
-                <option key={mes} value={mes}>{getNombreMes(mes)}</option>
-              ))}
-            </select>
-          </div>
-          <div className="filter-group">
-            <label htmlFor="año">Año:</label>
-            <select 
-              id="año" 
-              value={añoSeleccionado} 
-              onChange={(e) => setAñoSeleccionado(parseInt(e.target.value))}
-              className="admin-filter-select"
-              style={{ width: '100%' }}
-            >
-              {[2023, 2024, 2025].map(año => (
-                <option key={año} value={año}>{año}</option>
-              ))}
-            </select>
-          </div>
-
           <div className="filter-group">
             <label>Desde:</label>
             <input type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} className="admin-filter-select" style={{ width: '100%' }} />
@@ -751,13 +777,6 @@ export default function AdminEstadisticasIncapacidades() {
                 .map(opt => (<option key={opt.key} value={opt.key}>{opt.label}</option>))}
             </select>
           </div>
-          
-          <div className="filter-group" style={{ alignSelf: 'center' }}>
-            <label style={{ visibility: 'hidden' }}>Usar año</label>
-            <label style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-              <input type="checkbox" checked={usarAño} onChange={(e) => setUsarAño(e.target.checked)} /> Usar año
-            </label>
-          </div>
         </div>
         
         {loading ? (
@@ -772,8 +791,16 @@ export default function AdminEstadisticasIncapacidades() {
               <div className="summary-card">
                 <div className="summary-icon">📈</div>
                 <div className="summary-content">
-                  <h3>Resumen del Mes</h3>
-                  <p className="summary-period">{getNombreMes(mesSeleccionado)} {añoSeleccionado}</p>
+                  <h3>Resumen General</h3>
+                  <p className="summary-period">
+                    {dateFromParsed && dateToParsed 
+                      ? `${dateFromParsed.toLocaleDateString('es-ES')} - ${dateToParsed.toLocaleDateString('es-ES')}`
+                      : dateFromParsed 
+                        ? `Desde ${dateFromParsed.toLocaleDateString('es-ES')}`
+                        : dateToParsed
+                          ? `Hasta ${dateToParsed.toLocaleDateString('es-ES')}`
+                          : 'Todas las incapacidades'}
+                  </p>
                   <div className="summary-number">{estadisticas.total}</div>
                   <div className="summary-label">Total de Incapacidades</div>
                 </div>

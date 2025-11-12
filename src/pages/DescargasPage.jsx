@@ -1,40 +1,88 @@
 import React, { useEffect, useState } from 'react';
-import { getArchivosCatalog } from '../services/archivos';
+import { getParametrosPadre, getParametrosHijosByPapa } from '../services/parametros';
+
+// ID del parámetro padre para "Archivos de Descarga"
+// Si no existe, se buscará por nombre "Archivos de Descarga" o "Descargas"
+const PARAMETRO_DESCARGAS_ID = null; // null = buscar por nombre, o poner el ID específico
 
 export default function DescargasPage() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  // Entradas fijas solicitadas
-  const fixed = [
-    { id: 'sanitas', nombre: 'Sanitas', descripcion: 'EPS Sanitas', url: '/FORMATO%20DE%20INVESTIGACION%20SANITAS.pdf' },
-    { id: 'salud_total', nombre: 'Salud Total', descripcion: 'EPS Salud Total', url: '/FORMATO%20ACCIDENTE%20SALUD%20TOTAL.pdf' },
-  ];
 
   useEffect(() => {
     (async () => {
       try {
         setLoading(true);
         setError('');
-        const data = await getArchivosCatalog();
-        const arr = Array.isArray(data) ? data : [];
-        // Tomar solo SANITAS y SALUD TOTAL del catálogo (si existen) y mezclar con las fijas
-        const onlyAllowed = arr.filter(it => {
-          const n = (it?.nombre || it?.descripcion || '').toLowerCase();
-          return n.includes('sanitas') || n.includes('salud total');
-        });
-        // Normalizar a mapa por nombre en minúsculas
-        const mapByName = {};
-        onlyAllowed.forEach(it => {
-          const key = (it?.nombre || it?.descripcion || '').toLowerCase().trim();
-          if (key) mapByName[key] = it;
-        });
-        const merged = fixed.map(f => {
-          const key = (f.nombre || '').toLowerCase().trim();
-          const match = key ? (key in mapByName ? mapByName[key] : null) : null;
-          return match ? { ...f, ...match } : f;
-        });
-        setItems(merged);
+        
+        // Obtener el ID del parámetro padre de descargas
+        let parametroDescargasId = PARAMETRO_DESCARGAS_ID;
+        
+        if (!parametroDescargasId) {
+          // Buscar el parámetro padre por nombre
+          const parametrosPadre = await getParametrosPadre();
+          const parametroDescargas = parametrosPadre.find(p => {
+            const nombre = (p?.nombre || '').toLowerCase();
+            return nombre.includes('descarga') || nombre.includes('archivo de descarga');
+          });
+          
+          if (!parametroDescargas) {
+            throw new Error('No se encontró el parámetro "Archivos de Descarga". Por favor, créalo en la página de Parámetros.');
+          }
+          
+          parametroDescargasId = parametroDescargas.id_parametro || parametroDescargas.id || parametroDescargas.idparametro;
+        }
+        
+        // Obtener los parámetros hijos (archivos descargables)
+        const parametrosHijos = await getParametrosHijosByPapa(parametroDescargasId);
+        
+        // Convertir parámetros hijos a formato de items
+        const itemsList = parametrosHijos
+          .filter(ph => ph.estado !== false) // Solo activos
+          .map(ph => {
+            // La descripción puede contener la URL completa o el nombre del archivo
+            const descripcion = ph.descripcion || '';
+            // Intentar extraer URL de la descripción o construirla
+            let url = null;
+            
+            // Si la descripción parece una URL completa (http/https), usarla directamente
+            if (descripcion.startsWith('http://') || descripcion.startsWith('https://')) {
+              url = descripcion;
+            }
+            // Si empieza con /, es una ruta relativa, usarla directamente
+            else if (descripcion.startsWith('/')) {
+              url = descripcion;
+            }
+            // Si contiene extensión de archivo (.pdf, .doc, etc.), construir ruta desde public
+            else if (descripcion.includes('.pdf') || descripcion.includes('.doc') || descripcion.includes('.docx') || descripcion.includes('.xls') || descripcion.includes('.xlsx')) {
+              // Archivos en public se acceden desde la raíz, codificar espacios
+              const nombreArchivo = descripcion.replace(/\s+/g, '%20');
+              url = `/${nombreArchivo}`;
+            }
+            // Si no tiene extensión pero tiene contenido, intentar construir desde el nombre del parámetro
+            else if (descripcion.trim()) {
+              // Asumir que es un nombre de archivo sin extensión, agregar .pdf por defecto
+              const nombreArchivo = descripcion.replace(/\s+/g, '%20');
+              url = `/${nombreArchivo}.pdf`;
+            }
+            // Si no hay descripción, intentar construir desde el nombre del parámetro
+            else {
+              const nombreArchivo = (ph.nombre || '').replace(/\s+/g, '%20');
+              if (nombreArchivo) {
+                url = `/${nombreArchivo}.pdf`; // Asumir PDF por defecto
+              }
+            }
+            
+            return {
+              id: ph.id_parametrohijo || ph.id,
+              nombre: ph.nombre || 'Sin nombre',
+              descripcion: descripcion || ph.nombre || '',
+              url: url
+            };
+          });
+        
+        setItems(itemsList);
       } catch (e) {
         setError(e.message || 'Error cargando archivos');
       } finally {
@@ -43,13 +91,10 @@ export default function DescargasPage() {
     })();
   }, []);
 
-  const resolveName = (it) => it?.nombre || it?.descripcion || it?.titulo || it?.texto || `Archivo ${it?.id_archivo || it?.id || ''}`;
+  const resolveName = (it) => it?.nombre || it?.descripcion || 'Sin nombre';
   const resolveUrl = (it) => {
-    const direct = it?.url || it?.enlace || it?.link || it?.ruta || it?.archivo_url || it?.gdrive_url;
-    if (typeof direct === 'string' && direct.trim()) return direct;
-    const candidate = it?.nombre_archivo || it?.archivo || '';
-    if (candidate) return `/uploads/${candidate}`;
-    return null;
+    // La URL ya viene en el objeto desde el mapeo
+    return it?.url || null;
   };
 
   const list = items;
@@ -81,7 +126,7 @@ export default function DescargasPage() {
               const url = resolveUrl(it);
               const descripcion = it?.descripcion || '';
               return (
-                <tr key={it?.id_archivo || it?.id || idx}>
+                <tr key={it?.id || idx}>
                   <td>{name}</td>
                   <td>{descripcion}</td>
                   <td>
